@@ -1,0 +1,100 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  firstname String
+  email     String   @unique
+  mobile    String
+  password  String
+  role      String   // "patron" or "manager"
+
+  orders    Order[]
+  createdAt DateTime @default(now())
+}
+
+model Order {
+  id              Int           @id @default(autoincrement())
+  userId          Int
+  pickUpLocation  String
+  pickUpTime      DateTime
+  totalAmount     Float
+  vatAmount       Float
+  discountApplied Float
+  isPaid          Boolean       @default(false)
+
+  drinks          OrderDrink[]
+  user            User          @relation(fields: [userId], references: [id])
+
+  createdAt       DateTime      @default(now())
+}
+
+model OrderDrink {
+  id           Int      @id @default(autoincrement())
+  orderId      Int
+  flavourId    Int
+  toppingId    Int
+  consistencyId Int
+  price        Float
+
+  order        Order     @relation(fields: [orderId], references: [id])
+  flavour      Flavour   @relation(fields: [flavourId], references: [id])
+  topping      Topping   @relation(fields: [toppingId], references: [id])
+  consistency  Consistency @relation(fields: [consistencyId], references: [id])
+}
+
+model Flavour {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  fee   Float
+}
+
+model Topping {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  fee   Float
+}
+
+model Consistency {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  fee   Float
+}
+
+model Config {
+  id                      Int    @id @default(autoincrement())
+  maxDrinks               Int
+  vatPercentage           Float
+  discountTier1Orders     Int
+  discountTier1MinDrinks  Int
+  discountTier2Orders     Int
+  discountTier2MinDrinks  Int
+  discountTier3Orders     Int
+  discountTier3MinDrinks  Int
+  maxDiscountAmount       Float
+}
+
+model AuditLog {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  action    String   // "UPDATE_LOOKUP" / "CREATE_ORDER" etc.
+  field     String?
+  oldValue  String?
+  newValue  String?
+  timestamp DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id])
+}
+
