@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "seed": "node Backend/prisma/seed.js"
+    "seed": "node Backend/prisma/seed.js",
+    "prisma:generate": "prisma generate --schema=./Backend/prisma/schema.prisma",
+    "prisma:migrate": "prisma migrate dev --schema=./Backend/prisma/schema.prisma"
   },
   "prisma": {
     "seed": "node Backend/prisma/seed.js"
@@ -15,7 +17,7 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
-    "@prisma/client": "^7.0.1",
+    "@prisma/client": "^6.10.0",
     "axios": "^1.13.2",
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.5",
@@ -23,7 +25,7 @@
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.2",
     "nodemailer": "^7.0.11",
-    "prisma": "^7.0.1",
+    "prisma": "^6.10.0",
     "react-router-dom": "^7.10.0"
   }
 }

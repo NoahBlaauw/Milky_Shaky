@@ -4,10 +4,21 @@ const bcrypt = require('bcryptjs');
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('Starting seed...');
+  console.log('🌱 Starting seed...');
+
+  // Clear existing data (optional - helps with re-running seed)
+  await prisma.orderDrink.deleteMany();
+  await prisma.order.deleteMany();
+  await prisma.auditLog.deleteMany();
+  await prisma.user.deleteMany();
+  await prisma.config.deleteMany();
+  await prisma.flavour.deleteMany();
+  await prisma.topping.deleteMany();
+  await prisma.consistency.deleteMany();
+  console.log('✅ Cleared existing data');
 
   // 1. Create Config
-  await prisma.config.create({
+  const config = await prisma.config.create({
     data: {
       maxDrinks: 10,
       vatPercentage: 15.0,
@@ -20,39 +31,33 @@ async function main() {
       maxDiscountAmount: 50.0
     }
   });
-  console.log('Config created');
+  console.log('✅ Config created');
 
   // 2. Create Flavours
-  const flavours = await Promise.all([
-    prisma.flavour.create({ data: { name: 'Strawberry', fee: 25.0 } }),
-    prisma.flavour.create({ data: { name: 'Vanilla', fee: 20.0 } }),
-    prisma.flavour.create({ data: { name: 'Chocolate', fee: 25.0 } }),
-    prisma.flavour.create({ data: { name: 'Coffee', fee: 30.0 } }),
-    prisma.flavour.create({ data: { name: 'Banana', fee: 22.0 } }),
-    prisma.flavour.create({ data: { name: 'Oreo', fee: 35.0 } }),
-    prisma.flavour.create({ data: { name: 'Bar One', fee: 35.0 } })
-  ]);
-  console.log('Flavours created');
+  const strawberry = await prisma.flavour.create({ data: { name: 'Strawberry', fee: 25.0 } });
+  const vanilla = await prisma.flavour.create({ data: { name: 'Vanilla', fee: 20.0 } });
+  const chocolate = await prisma.flavour.create({ data: { name: 'Chocolate', fee: 25.0 } });
+  const coffee = await prisma.flavour.create({ data: { name: 'Coffee', fee: 30.0 } });
+  const banana = await prisma.flavour.create({ data: { name: 'Banana', fee: 22.0 } });
+  const oreo = await prisma.flavour.create({ data: { name: 'Oreo', fee: 35.0 } });
+  const barone = await prisma.flavour.create({ data: { name: 'Bar One', fee: 35.0 } });
+  console.log('✅ Flavours created');
 
   // 3. Create Toppings
-  const toppings = await Promise.all([
-    prisma.topping.create({ data: { name: 'Frozen Strawberries', fee: 10.0 } }),
-    prisma.topping.create({ data: { name: 'Freeze-dried Banana', fee: 12.0 } }),
-    prisma.topping.create({ data: { name: 'Oreo Crumbs', fee: 15.0 } }),
-    prisma.topping.create({ data: { name: 'Bar One Syrup', fee: 15.0 } }),
-    prisma.topping.create({ data: { name: 'Coffee Powder with Chocolate', fee: 18.0 } }),
-    prisma.topping.create({ data: { name: 'Chocolate Vermicelli', fee: 12.0 } })
-  ]);
-  console.log('Toppings created');
+  const frozenStrawberries = await prisma.topping.create({ data: { name: 'Frozen Strawberries', fee: 10.0 } });
+  const freezeDriedBanana = await prisma.topping.create({ data: { name: 'Freeze-dried Banana', fee: 12.0 } });
+  const oreoCrumbs = await prisma.topping.create({ data: { name: 'Oreo Crumbs', fee: 15.0 } });
+  const barOneSyrup = await prisma.topping.create({ data: { name: 'Bar One Syrup', fee: 15.0 } });
+  const coffeePowder = await prisma.topping.create({ data: { name: 'Coffee Powder with Chocolate', fee: 18.0 } });
+  const chocolateVermicelli = await prisma.topping.create({ data: { name: 'Chocolate Vermicelli', fee: 12.0 } });
+  console.log('✅ Toppings created');
 
   // 4. Create Consistencies
-  const consistencies = await Promise.all([
-    prisma.consistency.create({ data: { name: 'Double Thick', fee: 15.0 } }),
-    prisma.consistency.create({ data: { name: 'Thick', fee: 10.0 } }),
-    prisma.consistency.create({ data: { name: 'Milky', fee: 5.0 } }),
-    prisma.consistency.create({ data: { name: 'Icy', fee: 8.0 } })
-  ]);
-  console.log('Consistencies created');
+  const doubleThick = await prisma.consistency.create({ data: { name: 'Double Thick', fee: 15.0 } });
+  const thick = await prisma.consistency.create({ data: { name: 'Thick', fee: 10.0 } });
+  const milky = await prisma.consistency.create({ data: { name: 'Milky', fee: 5.0 } });
+  const icy = await prisma.consistency.create({ data: { name: 'Icy', fee: 8.0 } });
+  console.log('✅ Consistencies created');
 
   // 5. Create Users
   const hashedPassword = await bcrypt.hash('password123', 10);
@@ -86,7 +91,7 @@ async function main() {
       role: 'patron'
     }
   });
-  console.log('Users created (password: password123)');
+  console.log('✅ Users created (password: password123)');
 
   // 6. Create sample orders for patron1 (to test discount tiers)
   const order1 = await prisma.order.create({
@@ -100,9 +105,9 @@ async function main() {
       isPaid: true,
       drinks: {
         create: {
-          flavourId: flavours[0].id,
-          toppingId: toppings[0].id,
-          consistencyId: consistencies[0].id,
+          flavourId: strawberry.id,
+          toppingId: frozenStrawberries.id,
+          consistencyId: doubleThick.id,
           price: 50.0
         }
       }
@@ -121,29 +126,29 @@ async function main() {
       drinks: {
         create: [
           {
-            flavourId: flavours[1].id,
-            toppingId: toppings[1].id,
-            consistencyId: consistencies[1].id,
+            flavourId: vanilla.id,
+            toppingId: freezeDriedBanana.id,
+            consistencyId: thick.id,
             price: 30.0
           },
           {
-            flavourId: flavours[2].id,
-            toppingId: toppings[2].id,
-            consistencyId: consistencies[2].id,
+            flavourId: chocolate.id,
+            toppingId: oreoCrumbs.id,
+            consistencyId: milky.id,
             price: 30.0
           }
         ]
       }
     }
   });
-  console.log('Sample orders created');
+  console.log('✅ Sample orders created');
 
-  console.log('Seed completed successfully!');
+  console.log('🎉 Seed completed successfully!');
 }
 
 main()
   .catch((e) => {
-    console.error(' Seed failed:', e);
+    console.error('❌ Seed failed:', e);
     process.exit(1);
   })
   .finally(async () => {
