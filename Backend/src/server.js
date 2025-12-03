@@ -4,6 +4,7 @@ const cors = require('cors');
 
 // Import routes
 const authRoutes = require('./routes/authRoutes');
+const lookupRoutes = require('./routes/lookupRoutes');  // ← NEW
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -15,6 +16,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/lookups', lookupRoutes);  // ← NEW
 
 // Test route
 app.get('/', (req, res) => {
@@ -40,6 +42,10 @@ app.listen(PORT, () => {
   console.log(`🔐 Auth endpoints:`);
   console.log(`   - POST http://localhost:${PORT}/api/auth/signup`);
   console.log(`   - POST http://localhost:${PORT}/api/auth/login`);
+  console.log(`🔧 Lookup endpoints:`);
+  console.log(`   - GET http://localhost:${PORT}/api/lookups`);
+  console.log(`   - POST http://localhost:${PORT}/api/lookups/flavours`);
+  console.log(`   - PUT http://localhost:${PORT}/api/lookups/config`);
 });
 
 module.exports = app;
