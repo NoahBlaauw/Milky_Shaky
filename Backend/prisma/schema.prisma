@@ -10,7 +10,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -22,6 +21,7 @@ model User {
   role      String   // "patron" or "manager"
 
   orders    Order[]
+  auditLogs AuditLog[]  // Added reverse relation
   createdAt DateTime @default(now())
 }
 
@@ -59,18 +59,24 @@ model Flavour {
   id    Int    @id @default(autoincrement())
   name  String @unique
   fee   Float
+  
+  orderDrinks OrderDrink[]  // Added reverse relation
 }
 
 model Topping {
   id    Int    @id @default(autoincrement())
   name  String @unique
   fee   Float
+  
+  orderDrinks OrderDrink[]  // Added reverse relation
 }
 
 model Consistency {
   id    Int    @id @default(autoincrement())
   name  String @unique
   fee   Float
+  
+  orderDrinks OrderDrink[]  // Added reverse relation
 }
 
 model Config {
@@ -97,4 +103,3 @@ model AuditLog {
 
   user      User     @relation(fields: [userId], references: [id])
 }
-
