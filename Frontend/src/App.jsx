@@ -1,46 +1,91 @@
-import { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { useAuth } from './context/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
+import ManagerRoute from './components/ManagerRoute';
+
+// Import pages
+import Home from './pages/Home';
+import Login from './pages/Login';
+import Signup from './pages/Signup';
+import OrderForm from './pages/OrderForm';
+import MyOrders from './pages/MyOrders';
+import LookupManagement from './pages/LookupManagement';
+import Reports from './pages/Reports';
+
 import './App.css';
-import ApiTest from './components/ApiTest';
 
 function App() {
-  const [message, setMessage] = useState('');
-
-  // Test connection to backend
-  const testConnection = async () => {
-    try {
-      const response = await fetch('http://localhost:5000/health');
-      const data = await response.json();
-      setMessage(`✅ Backend connected! Status: ${data.status}`);
-    } catch (error) {
-      setMessage('❌ Cannot connect to backend. Make sure it is running on http://localhost:5000');
-    }
-  };
+  const { isAuthenticated } = useAuth();
 
   return (
-    <div className="App">
-      <h1>🥤 Milky Shaky - Frontend</h1>
-      <p>Frontend is running!</p>
-      
-      <button onClick={testConnection}>
-        Test Backend Connection
-      </button>
-      
-      {message && (
-        <div style={{ 
-          marginTop: '20px', 
-          padding: '10px', 
-          backgroundColor: message.includes('✅') ? '#d4edda' : '#f8d7da',
-          border: '1px solid ' + (message.includes('✅') ? '#c3e6cb' : '#f5c6cb'),
-          borderRadius: '5px'
+    <Router>
+      <div className="App">
+        {/* Simple navigation bar - we'll make it better in Step 6 */}
+        <nav style={{ 
+          padding: '15px', 
+          backgroundColor: '#333', 
+          color: 'white',
+          marginBottom: '20px'
         }}>
-          {message}
-        </div>
-      )}
+          <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
+            <span style={{ fontWeight: 'bold', fontSize: '20px' }}>🥤 Milky Shaky</span>
+            {isAuthenticated() && (
+              <div style={{ display: 'flex', gap: '15px' }}>
+                <a href="/order" style={{ color: 'white' }}>Order</a>
+                <a href="/my-orders" style={{ color: 'white' }}>My Orders</a>
+              </div>
+            )}
+          </div>
+        </nav>
 
-      <hr style={{ margin: '30px 0' }} />
+        {/* Routes */}
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
 
-      <ApiTest />
-    </div>
+          {/* Protected Routes (require authentication) */}
+          <Route 
+            path="/order" 
+            element={
+              <ProtectedRoute>
+                <OrderForm />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/my-orders" 
+            element={
+              <ProtectedRoute>
+                <MyOrders />
+              </ProtectedRoute>
+            } 
+          />
+
+          {/* Manager-Only Routes */}
+          <Route 
+            path="/lookups" 
+            element={
+              <ManagerRoute>
+                <LookupManagement />
+              </ManagerRoute>
+            } 
+          />
+          <Route 
+            path="/reports" 
+            element={
+              <ManagerRoute>
+                <Reports />
+              </ManagerRoute>
+            } 
+          />
+
+          {/* Catch-all: redirect to home */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
