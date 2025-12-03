@@ -1,5 +1,6 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
+const { sendOrderConfirmation } = require('../utils/emailService');
 
 // ============================================
 // HELPER: Calculate Discount for User
@@ -265,8 +266,22 @@ const createOrder = async (req, res) => {
       }
     });
 
+// Send order confirmation email
+    const user = await prisma.user.findUnique({
+      where: { id: userId }
+    });
+
+    const emailResult = await sendOrderConfirmation(user, order);
+    
+    if (emailResult.success) {
+      console.log(`📧 Order confirmation email sent to ${user.email}`);
+    } else {
+      console.log(`⚠️ Failed to send order confirmation email: ${emailResult.error}`);
+    }
+
     res.status(201).json({
       message: 'Order created successfully',
+      emailSent: emailResult.success,
       order: {
         id: order.id,
         totalAmount: order.totalAmount,

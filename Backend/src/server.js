@@ -1,11 +1,12 @@
-require('dotenv').config();
+require('dotenv').config({ path: './Backend/.env' });
 const express = require('express');
 const cors = require('cors');
+const { verifyEmailConfig } = require('./utils/emailService');  // ← NEW
 
 // Import routes
 const authRoutes = require('./routes/authRoutes');
 const lookupRoutes = require('./routes/lookupRoutes');
-const orderRoutes = require('./routes/orderRoutes');  // ← NEW
+const orderRoutes = require('./routes/orderRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -18,7 +19,7 @@ app.use(express.urlencoded({ extended: true }));
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/lookups', lookupRoutes);
-app.use('/api/orders', orderRoutes);  // ← NEW
+app.use('/api/orders', orderRoutes);
 
 // Test route
 app.get('/', (req, res) => {
@@ -37,8 +38,11 @@ app.get('/health', (req, res) => {
   });
 });
 
+
+
+
 // Start server
-app.listen(PORT, () => {
+app.listen(PORT, async () => {  // ← Make this async
   console.log(`🚀 Server is running on http://localhost:${PORT}`);
   console.log(`📊 Health check: http://localhost:${PORT}/health`);
   console.log(`🔐 Auth endpoints:`);
@@ -50,6 +54,10 @@ app.listen(PORT, () => {
   console.log(`   - POST http://localhost:${PORT}/api/orders/calculate`);
   console.log(`   - POST http://localhost:${PORT}/api/orders/create`);
   console.log(`   - GET http://localhost:${PORT}/api/orders/my-orders`);
+  
+  // Verify email configuration  ← NEW
+  console.log('\n📧 Verifying email configuration...');
+  await verifyEmailConfig();
 });
 
 module.exports = app;
