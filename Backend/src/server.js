@@ -39,6 +39,20 @@ app.get('/health', (req, res) => {
 });
 
 
+// Test email endpoint
+const { sendTestEmail } = require('./utils/emailService');
+
+app.post('/api/test-email', async (req, res) => {
+  const { email } = req.body;
+  
+  if (!email) {
+    return res.status(400).json({ error: 'Email address required' });
+  }
+  
+  const result = await sendTestEmail(email);
+  res.json(result);
+});
+
 
 
 // Start server
