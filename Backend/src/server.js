@@ -4,7 +4,8 @@ const cors = require('cors');
 
 // Import routes
 const authRoutes = require('./routes/authRoutes');
-const lookupRoutes = require('./routes/lookupRoutes');  // ← NEW
+const lookupRoutes = require('./routes/lookupRoutes');
+const orderRoutes = require('./routes/orderRoutes');  // ← NEW
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -16,7 +17,8 @@ app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use('/api/auth', authRoutes);
-app.use('/api/lookups', lookupRoutes);  // ← NEW
+app.use('/api/lookups', lookupRoutes);
+app.use('/api/orders', orderRoutes);  // ← NEW
 
 // Test route
 app.get('/', (req, res) => {
@@ -44,8 +46,10 @@ app.listen(PORT, () => {
   console.log(`   - POST http://localhost:${PORT}/api/auth/login`);
   console.log(`🔧 Lookup endpoints:`);
   console.log(`   - GET http://localhost:${PORT}/api/lookups`);
-  console.log(`   - POST http://localhost:${PORT}/api/lookups/flavours`);
-  console.log(`   - PUT http://localhost:${PORT}/api/lookups/config`);
+  console.log(`🛒 Order endpoints:`);
+  console.log(`   - POST http://localhost:${PORT}/api/orders/calculate`);
+  console.log(`   - POST http://localhost:${PORT}/api/orders/create`);
+  console.log(`   - GET http://localhost:${PORT}/api/orders/my-orders`);
 });
 
 module.exports = app;
