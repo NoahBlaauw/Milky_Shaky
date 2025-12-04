@@ -11,101 +11,47 @@ const lookupService = {
     }
   },
 
-  // FLAVOURS
-  createFlavour: async (flavour) => {
+  // Create new lookup item (flavours, toppings, or consistencies)
+  createLookup: async (type, data) => {
     try {
-      const response = await api.post('/lookups/flavours', flavour);
+      const response = await api.post(`/lookups/${type}`, data);
       return response.data;
     } catch (error) {
-      throw error.response?.data || { error: 'Failed to create flavour' };
+      throw error.response?.data || { error: 'Failed to create lookup' };
     }
   },
 
-  updateFlavour: async (id, flavour) => {
+  // Update lookup item
+  updateLookup: async (type, id, data) => {
     try {
-      const response = await api.put(`/lookups/flavours/${id}`, flavour);
+      const response = await api.put(`/lookups/${type}/${id}`, data);
       return response.data;
     } catch (error) {
-      throw error.response?.data || { error: 'Failed to update flavour' };
+      throw error.response?.data || { error: 'Failed to update lookup' };
     }
   },
 
-  deleteFlavour: async (id) => {
+  // Delete lookup item
+  deleteLookup: async (type, id) => {
     try {
-      const response = await api.delete(`/lookups/flavours/${id}`);
+      const response = await api.delete(`/lookups/${type}/${id}`);
       return response.data;
     } catch (error) {
-      throw error.response?.data || { error: 'Failed to delete flavour' };
+      throw error.response?.data || { error: 'Failed to delete lookup' };
     }
   },
 
-  // TOPPINGS
-  createTopping: async (topping) => {
+  // Update system configuration
+  updateConfig: async (data) => {
     try {
-      const response = await api.post('/lookups/toppings', topping);
-      return response.data;
-    } catch (error) {
-      throw error.response?.data || { error: 'Failed to create topping' };
-    }
-  },
-
-  updateTopping: async (id, topping) => {
-    try {
-      const response = await api.put(`/lookups/toppings/${id}`, topping);
-      return response.data;
-    } catch (error) {
-      throw error.response?.data || { error: 'Failed to update topping' };
-    }
-  },
-
-  deleteTopping: async (id) => {
-    try {
-      const response = await api.delete(`/lookups/toppings/${id}`);
-      return response.data;
-    } catch (error) {
-      throw error.response?.data || { error: 'Failed to delete topping' };
-    }
-  },
-
-  // CONSISTENCIES
-  createConsistency: async (consistency) => {
-    try {
-      const response = await api.post('/lookups/consistencies', consistency);
-      return response.data;
-    } catch (error) {
-      throw error.response?.data || { error: 'Failed to create consistency' };
-    }
-  },
-
-  updateConsistency: async (id, consistency) => {
-    try {
-      const response = await api.put(`/lookups/consistencies/${id}`, consistency);
-      return response.data;
-    } catch (error) {
-      throw error.response?.data || { error: 'Failed to update consistency' };
-    }
-  },
-
-  deleteConsistency: async (id) => {
-    try {
-      const response = await api.delete(`/lookups/consistencies/${id}`);
-      return response.data;
-    } catch (error) {
-      throw error.response?.data || { error: 'Failed to delete consistency' };
-    }
-  },
-
-  // CONFIG
-  updateConfig: async (config) => {
-    try {
-      const response = await api.put('/lookups/config', config);
+      const response = await api.put('/lookups/config', data);
       return response.data;
     } catch (error) {
       throw error.response?.data || { error: 'Failed to update config' };
     }
   },
 
-  // AUDIT LOGS
+  // Get audit logs (manager only)
   getAuditLogs: async (filters = {}) => {
     try {
       const params = new URLSearchParams();

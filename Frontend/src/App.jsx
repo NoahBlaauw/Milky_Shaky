@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
+import Navbar from './components/Navbar';
 import ProtectedRoute from './components/ProtectedRoute';
 import ManagerRoute from './components/ManagerRoute';
 
@@ -15,75 +16,73 @@ import Reports from './pages/Reports';
 import './App.css';
 
 function App() {
-  const { isAuthenticated } = useAuth();
-
   return (
     <Router>
       <div className="App">
-        {/* Simple navigation bar - we'll make it better in Step 6 */}
-        <nav style={{ 
-          padding: '15px', 
-          backgroundColor: '#333', 
-          color: 'white',
-          marginBottom: '20px'
+        {/* Navigation Bar */}
+        <Navbar />
+
+        {/* Main Content */}
+        <div style={{ minHeight: 'calc(100vh - 60px)' }}>
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+
+            {/* Protected Routes (require authentication) */}
+            <Route 
+              path="/order" 
+              element={
+                <ProtectedRoute>
+                  <OrderForm />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/my-orders" 
+              element={
+                <ProtectedRoute>
+                  <MyOrders />
+                </ProtectedRoute>
+              } 
+            />
+
+            {/* Manager-Only Routes */}
+            <Route 
+              path="/lookups" 
+              element={
+                <ManagerRoute>
+                  <LookupManagement />
+                </ManagerRoute>
+              } 
+            />
+            <Route 
+              path="/reports" 
+              element={
+                <ManagerRoute>
+                  <Reports />
+                </ManagerRoute>
+              } 
+            />
+
+            {/* Catch-all: redirect to home */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </div>
+
+        {/* Optional Footer */}
+        <footer style={{
+          padding: '20px',
+          backgroundColor: '#f8f9fa',
+          textAlign: 'center',
+          borderTop: '1px solid #ddd',
+          marginTop: '40px'
         }}>
-          <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
-            <span style={{ fontWeight: 'bold', fontSize: '20px' }}>🥤 Milky Shaky</span>
-            {isAuthenticated() && (
-              <div style={{ display: 'flex', gap: '15px' }}>
-                <a href="/order" style={{ color: 'white' }}>Order</a>
-                <a href="/my-orders" style={{ color: 'white' }}>My Orders</a>
-              </div>
-            )}
-          </div>
-        </nav>
-
-        {/* Routes */}
-        <Routes>
-          {/* Public Routes */}
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-
-          {/* Protected Routes (require authentication) */}
-          <Route 
-            path="/order" 
-            element={
-              <ProtectedRoute>
-                <OrderForm />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/my-orders" 
-            element={
-              <ProtectedRoute>
-                <MyOrders />
-              </ProtectedRoute>
-            } 
-          />
-
-          {/* Manager-Only Routes */}
-          <Route 
-            path="/lookups" 
-            element={
-              <ManagerRoute>
-                <LookupManagement />
-              </ManagerRoute>
-            } 
-          />
-          <Route 
-            path="/reports" 
-            element={
-              <ManagerRoute>
-                <Reports />
-              </ManagerRoute>
-            } 
-          />
-
-          {/* Catch-all: redirect to home */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+          <p style={{ margin: 0, color: '#666', fontSize: '14px' }}>
+            © 2025 Milky Shaky Drinks. All rights reserved.
+          </p>
+        </footer>
       </div>
     </Router>
   );
