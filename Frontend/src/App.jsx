@@ -23,7 +23,7 @@ function App() {
         <Navbar />
 
         {/* Main Content */}
-        <div style={{ minHeight: 'calc(100vh - 60px)' }}>
+        <div style={{ minHeight: 'calc(100vh - 80px)' }}>
           <Routes>
             {/* Public Routes */}
             <Route path="/" element={<Home />} />
@@ -70,19 +70,6 @@ function App() {
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </div>
-
-        {/* Optional Footer */}
-        <footer style={{
-          padding: '20px',
-          backgroundColor: '#f8f9fa',
-          textAlign: 'center',
-          borderTop: '1px solid #ddd',
-          marginTop: '40px'
-        }}>
-          <p style={{ margin: 0, color: '#666', fontSize: '14px' }}>
-            © 2025 Milky Shaky Drinks. All rights reserved.
-          </p>
-        </footer>
       </div>
     </Router>
   );

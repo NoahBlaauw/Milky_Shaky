@@ -1,206 +1,190 @@
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 function Navbar() {
-  const { user, isAuthenticated, isManager, logout } = useAuth();
-  const navigate = useNavigate();
+  const { user, logout, isAuthenticated } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const handleLogout = () => {
     logout();
-    navigate('/');
+    navigate('/login');
   };
 
-  // Helper function to check if current route is active
-  const isActive = (path) => {
-    return location.pathname === path;
-  };
+  const isActive = (path) => location.pathname === path;
 
   return (
     <nav style={{
-      padding: '15px 30px',
-      backgroundColor: '#333',
-      color: 'white',
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      boxShadow: '0 2px 5px rgba(0,0,0,0.1)'
+      backgroundColor: '#FFFFFF',
+      borderBottom: '4px solid #FF1493',
+      padding: '25px 50px', 
+      boxShadow: '0 4px 15px rgba(220, 20, 60, 0.15)',
+      borderRadius: '20px 20px 20px 20px', 
+      margin: '0 20px 20px 20px' 
     }}>
-      {/* Left side: Logo/Brand */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '30px' }}>
-        <Link 
-          to="/" 
-          style={{ 
-            color: 'white', 
-            textDecoration: 'none',
-            fontSize: '24px',
-            fontWeight: 'bold'
-          }}
-        >
-          🥤 Milky Shaky
-        </Link>
+      <div style={{
+        maxWidth: '1600px', // Increased from 1400px to make it wider
+        margin: '0 auto',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center'
+      }}>
+      {/* Logo/Brand */}
+      <Link 
+        to="/" 
+        style={{ 
+          textDecoration: 'none',
+          fontSize: '36px',
+          fontWeight: 'bold',
+          background: 'linear-gradient(135deg, #FF1493 0%, #DC143C 100%)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          letterSpacing: '1.5px',
+          marginRight: '80px' // ← ADD THIS LINE to push logo away from nav links
+        }}
+      >
+        Milky Shaky
+      </Link>
 
-        {/* Navigation Links - Only show if authenticated */}
-        {isAuthenticated() && (
-          <div style={{ display: 'flex', gap: '20px' }}>
-            {/* Order Link - Available to all authenticated users */}
-            <Link
-              to="/order"
-              style={{
-                color: 'white',
-                textDecoration: 'none',
-                padding: '8px 15px',
-                borderRadius: '4px',
-                backgroundColor: isActive('/order') ? '#555' : 'transparent',
-                transition: 'background-color 0.2s'
-              }}
-            >
-              📝 Order
-            </Link>
+        {/* Navigation Links */}
+        <div style={{ display: 'flex', gap: '30px', alignItems: 'center' }}> {/* Increased gap from 25px to 30px */}
+          {!isAuthenticated() ? (
+            <>
+              <Link
+                to="/login"
+                style={{
+                  textDecoration: 'none',
+                  color: isActive('/login') ? '#DC143C' : '#2D2D2D',
+                  fontWeight: isActive('/login') ? 'bold' : 'normal',
+                  fontSize: '17px', // Slightly larger
+                  borderBottom: isActive('/login') ? '3px solid #FF1493' : 'none',
+                  paddingBottom: '5px',
+                  transition: 'all 0.3s'
+                }}
+              >
+                Login
+              </Link>
+              <Link
+                to="/signup"
+                style={{
+                  textDecoration: 'none',
+                  padding: '14px 28px', // Increased from 12px 24px
+                  background: 'linear-gradient(135deg, #FF1493 0%, #DC143C 100%)',
+                  color: '#FFFFFF',
+                  borderRadius: '30px',
+                  fontWeight: 'bold',
+                  fontSize: '17px', // Slightly larger
+                  boxShadow: '0 4px 15px rgba(255, 20, 147, 0.3)',
+                  transition: 'all 0.3s'
+                }}
+              >
+                Sign Up
+              </Link>
+            </>
+          ) : (
+            <>
+              {/* User Greeting */}
+              <span style={{ 
+                color: '#6B6B6B', 
+                fontSize: '18px', // Slightly larger
+                marginRight: '5px' // Extra spacing
+              }}>
+                Welcome, <strong style={{ color: '#DC143C' }}>{user.firstname}</strong>
+              </span>
 
-            {/* My Orders Link - Available to all authenticated users */}
-            <Link
-              to="/my-orders"
-              style={{
-                color: 'white',
-                textDecoration: 'none',
-                padding: '8px 15px',
-                borderRadius: '4px',
-                backgroundColor: isActive('/my-orders') ? '#555' : 'transparent',
-                transition: 'background-color 0.2s'
-              }}
-            >
-              📋 My Orders
-            </Link>
+              {/* Patron Links */}
+              <Link
+                to="/order"
+                style={{
+                  textDecoration: 'none',
+                  color: isActive('/order') ? '#DC143C' : '#2D2D2D',
+                  fontWeight: isActive('/order') ? 'bold' : 'normal',
+                  fontSize: '17px', // Slightly larger
+                  borderBottom: isActive('/order') ? '3px solid #FF1493' : 'none',
+                  paddingBottom: '5px',
+                  transition: 'all 0.3s'
+                }}
+              >
+                Order
+              </Link>
+              <Link
+                to="/my-orders"
+                style={{
+                  textDecoration: 'none',
+                  color: isActive('/my-orders') ? '#DC143C' : '#2D2D2D',
+                  fontWeight: isActive('/my-orders') ? 'bold' : 'normal',
+                  fontSize: '17px', // Slightly larger
+                  borderBottom: isActive('/my-orders') ? '3px solid #FF1493' : 'none',
+                  paddingBottom: '5px',
+                  transition: 'all 0.3s'
+                }}
+              >
+                My Orders
+              </Link>
 
-            {/* Manager-Only Links */}
-            {isManager() && (
-              <>
-                <Link
-                  to="/lookups"
-                  style={{
-                    color: 'white',
-                    textDecoration: 'none',
-                    padding: '8px 15px',
-                    borderRadius: '4px',
-                    backgroundColor: isActive('/lookups') ? '#555' : 'transparent',
-                    transition: 'background-color 0.2s'
-                  }}
-                >
-                  ⚙️ Lookups
-                </Link>
-
-                <Link
-                  to="/reports"
-                  style={{
-                    color: 'white',
-                    textDecoration: 'none',
-                    padding: '8px 15px',
-                    borderRadius: '4px',
-                    backgroundColor: isActive('/reports') ? '#555' : 'transparent',
-                    transition: 'background-color 0.2s'
-                  }}
-                >
-                  📊 Reports
-                </Link>
-              </>
-            )}
-          </div>
-        )}
-      </div>
-
-      {/* Right side: User info and auth buttons */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-        {isAuthenticated() ? (
-          <>
-            {/* User info */}
-            <div style={{
-              padding: '8px 15px',
-              backgroundColor: '#444',
-              borderRadius: '4px',
-              fontSize: '14px'
-            }}>
-              👋 {user.firstname}
-              {isManager() && (
-                <span style={{
-                  marginLeft: '8px',
-                  padding: '2px 8px',
-                  backgroundColor: '#ffc107',
-                  color: '#000',
-                  borderRadius: '3px',
-                  fontSize: '11px',
-                  fontWeight: 'bold'
-                }}>
-                  MANAGER
-                </span>
+              {/* Manager-Only Links */}
+              {user.role === 'manager' && (
+                <>
+                  <Link
+                    to="/lookups"
+                    style={{
+                      textDecoration: 'none',
+                      color: isActive('/lookups') ? '#DC143C' : '#2D2D2D',
+                      fontWeight: isActive('/lookups') ? 'bold' : 'normal',
+                      fontSize: '17px', // Slightly larger
+                      borderBottom: isActive('/lookups') ? '3px solid #FF1493' : 'none',
+                      paddingBottom: '5px',
+                      transition: 'all 0.3s'
+                    }}
+                  >
+                    Lookups
+                  </Link>
+                  <Link
+                    to="/reports"
+                    style={{
+                      textDecoration: 'none',
+                      color: isActive('/reports') ? '#DC143C' : '#2D2D2D',
+                      fontWeight: isActive('/reports') ? 'bold' : 'normal',
+                      fontSize: '17px', // Slightly larger
+                      borderBottom: isActive('/reports') ? '3px solid #FF1493' : 'none',
+                      paddingBottom: '5px',
+                      transition: 'all 0.3s'
+                    }}
+                  >
+                    Reports
+                  </Link>
+                </>
               )}
-            </div>
 
-            {/* Logout button */}
-            <button
-              onClick={handleLogout}
-              style={{
-                padding: '8px 15px',
-                backgroundColor: '#dc3545',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                fontSize: '14px',
-                fontWeight: 'bold',
-                transition: 'background-color 0.2s'
-              }}
-              onMouseEnter={(e) => e.target.style.backgroundColor = '#c82333'}
-              onMouseLeave={(e) => e.target.style.backgroundColor = '#dc3545'}
-            >
-              🚪 Logout
-            </button>
-          </>
-        ) : (
-          <>
-            {/* Login button */}
-            <Link to="/login">
+              {/* Logout Button */}
               <button
+                onClick={handleLogout}
                 style={{
-                  padding: '8px 15px',
-                  backgroundColor: '#007bff',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '4px',
+                  padding: '12px 24px', // Increased from 10px 20px
+                  backgroundColor: '#FFFFFF',
+                  color: '#DC143C',
+                  border: '2px solid #FF1493',
+                  borderRadius: '30px',
                   cursor: 'pointer',
-                  fontSize: '14px',
                   fontWeight: 'bold',
-                  transition: 'background-color 0.2s'
+                  fontSize: '17px', // Slightly larger
+                  transition: 'all 0.3s',
+                  marginLeft: '5px' // Extra spacing before logout
                 }}
-                onMouseEnter={(e) => e.target.style.backgroundColor = '#0056b3'}
-                onMouseLeave={(e) => e.target.style.backgroundColor = '#007bff'}
-              >
-                🔐 Login
-              </button>
-            </Link>
-
-            {/* Signup button */}
-            <Link to="/signup">
-              <button
-                style={{
-                  padding: '8px 15px',
-                  backgroundColor: '#28a745',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  fontSize: '14px',
-                  fontWeight: 'bold',
-                  transition: 'background-color 0.2s'
+                onMouseEnter={(e) => {
+                  e.target.style.background = 'linear-gradient(135deg, #FF1493 0%, #DC143C 100%)';
+                  e.target.style.color = '#FFFFFF';
                 }}
-                onMouseEnter={(e) => e.target.style.backgroundColor = '#218838'}
-                onMouseLeave={(e) => e.target.style.backgroundColor = '#28a745'}
+                onMouseLeave={(e) => {
+                  e.target.style.background = '#FFFFFF';
+                  e.target.style.color = '#DC143C';
+                }}
               >
-                📝 Sign Up
+                Logout
               </button>
-            </Link>
-          </>
-        )}
+            </>
+          )}
+        </div>
       </div>
     </nav>
   );

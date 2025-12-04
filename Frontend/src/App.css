@@ -40,3 +40,35 @@
 .read-the-docs {
   color: #888;
 }
+
+/* Global Styles - Strawberry Milkshake Theme */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #FFE5EC 0%, #FFF0F5 50%, #FFFFFF 100%);
+  min-height: 100vh;
+  color: #2D2D2D;
+}
+
+.App {
+  min-height: 100vh;
+}
+
+/* Primary Colors */
+:root {
+  --pink-primary: #FF69B4;
+  --pink-light: #FFB6D9;
+  --pink-lighter: #FFE5EC;
+  --pink-dark: #E91E63;
+  --white: #FFFFFF;
+  --text-dark: #2D2D2D;
+  --text-gray: #6B6B6B;
+  --border-gray: #E0E0E0;
+  --success: #FF69B4;
+  --error: #D32F2F;
+}
