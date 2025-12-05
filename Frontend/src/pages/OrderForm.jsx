@@ -8,7 +8,7 @@ function OrderForm() {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  // Lookup data from backend
+  // --- LOGIC (Unchanged) ---
   const [lookups, setLookups] = useState({
     flavours: [],
     toppings: [],
@@ -16,31 +16,21 @@ function OrderForm() {
     config: null
   });
 
-  // Form state
   const [numberOfDrinks, setNumberOfDrinks] = useState(1);
   const [drinks, setDrinks] = useState([]);
   const [showDrinkContainers, setShowDrinkContainers] = useState(false);
   const [showCheckout, setShowCheckout] = useState(false);
-
-  // Checkout state
   const [pickupLocation, setPickupLocation] = useState('');
   const [pickupDate, setPickupDate] = useState('');
   const [pickupTime, setPickupTime] = useState('');
-
-  // Calculation results
   const [calculation, setCalculation] = useState(null);
   const [calculationLoading, setCalculationLoading] = useState(false);
-
-  // Order submission
   const [submitting, setSubmitting] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
   const [orderResult, setOrderResult] = useState(null);
-
-  // Loading and error states
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  // Fetch lookups on component mount
   useEffect(() => {
     fetchLookups();
   }, []);
@@ -59,7 +49,6 @@ function OrderForm() {
     }
   };
 
-  // Handle number of drinks change
   const handleNumberChange = (e) => {
     const value = parseInt(e.target.value);
     if (value >= 1 && value <= (lookups.config?.maxDrinks || 10)) {
@@ -67,7 +56,6 @@ function OrderForm() {
     }
   };
 
-  // Initialize drink containers
   const handleNextClick = () => {
     const newDrinks = Array.from({ length: numberOfDrinks }, () => ({
       flavourId: '',
@@ -79,102 +67,60 @@ function OrderForm() {
     setShowDrinkContainers(true);
   };
 
-  // Handle drink field change
   const handleDrinkChange = (index, field, value) => {
     const newDrinks = [...drinks];
     newDrinks[index][field] = value;
-
-    // Calculate price for this drink if all fields are selected
     if (newDrinks[index].flavourId && newDrinks[index].toppingId && newDrinks[index].consistencyId) {
       const flavour = lookups.flavours.find(f => f.id === parseInt(newDrinks[index].flavourId));
       const topping = lookups.toppings.find(t => t.id === parseInt(newDrinks[index].toppingId));
       const consistency = lookups.consistencies.find(c => c.id === parseInt(newDrinks[index].consistencyId));
-      
       if (flavour && topping && consistency) {
         newDrinks[index].price = flavour.fee + topping.fee + consistency.fee;
       }
     }
-
     setDrinks(newDrinks);
   };
 
-  // Check if all drinks are complete
   const allDrinksComplete = () => {
-    return drinks.every(drink => 
-      drink.flavourId && drink.toppingId && drink.consistencyId
-    );
+    return drinks.every(drink => drink.flavourId && drink.toppingId && drink.consistencyId);
   };
 
-  // Calculate order total
   const handleCalculateTotal = async () => {
     setCalculationLoading(true);
     setError('');
-
     try {
-      // Prepare drinks data for API
       const drinksData = drinks.map(drink => ({
         flavourId: parseInt(drink.flavourId),
         toppingId: parseInt(drink.toppingId),
         consistencyId: parseInt(drink.consistencyId)
       }));
-
       const result = await orderService.calculateOrder(drinksData);
       setCalculation(result);
       setShowCheckout(true);
     } catch (err) {
       setError('Failed to calculate order. Please try again.');
-      console.error('Error calculating order:', err);
     } finally {
       setCalculationLoading(false);
     }
   };
 
-  // Validate pickup details
   const validatePickupDetails = () => {
-    if (!pickupLocation.trim()) {
-      setError('Please enter a pickup location');
-      return false;
-    }
-    if (!pickupDate) {
-      setError('Please select a pickup date');
-      return false;
-    }
-    if (!pickupTime) {
-      setError('Please select a pickup time');
-      return false;
-    }
-
-    // Combine date and time
+    if (!pickupLocation.trim()) { setError('Please enter a pickup location'); return false; }
+    if (!pickupDate) { setError('Please select a pickup date'); return false; }
+    if (!pickupTime) { setError('Please select a pickup time'); return false; }
     const pickupDateTime = new Date(`${pickupDate}T${pickupTime}`);
     const now = new Date();
-    
-    // Check if pickup time is in the past
-    if (pickupDateTime <= now) {
-      setError('Pickup time must be in the future');
-      return false;
-    }
-
-    // Check if pickup time is at least 30 minutes from now
+    if (pickupDateTime <= now) { setError('Pickup time must be in the future'); return false; }
     const thirtyMinutesFromNow = new Date(now.getTime() + 30 * 60000);
-    if (pickupDateTime < thirtyMinutesFromNow) {
-      setError('Pickup time must be at least 30 minutes from now');
-      return false;
-    }
-
+    if (pickupDateTime < thirtyMinutesFromNow) { setError('Pickup time must be at least 30 minutes from now'); return false; }
     return true;
   };
 
-  // Submit order
   const handleSubmitOrder = async () => {
-    if (!validatePickupDetails()) {
-      return;
-    }
-
+    if (!validatePickupDetails()) return;
     setSubmitting(true);
     setError('');
-
     try {
-      // Prepare order data
       const orderData = {
         drinks: drinks.map(drink => ({
           flavourId: parseInt(drink.flavourId),
@@ -184,18 +130,15 @@ function OrderForm() {
         pickUpLocation: pickupLocation,
         pickUpTime: new Date(`${pickupDate}T${pickupTime}`).toISOString()
       };
-
       const result = await orderService.createOrder(orderData);
       setOrderResult(result);
       setOrderSuccess(true);
     } catch (err) {
       setError(err.error || 'Failed to place order. Please try again.');
-      console.error('Error submitting order:', err);
       setSubmitting(false);
     }
   };
 
-  // Reset form
   const handleReset = () => {
     setNumberOfDrinks(1);
     setDrinks([]);
@@ -208,610 +151,352 @@ function OrderForm() {
     setError('');
   };
 
-  // Go back to drinks
   const handleBackToDrinks = () => {
     setShowCheckout(false);
     setCalculation(null);
     setError('');
   };
 
-  // Get minimum date (today) in YYYY-MM-DD format
-  const getMinDate = () => {
-    return new Date().toISOString().split('T')[0];
+  const getMinDate = () => new Date().toISOString().split('T')[0];
+
+  // --- STYLES (Ported from Home Page) ---
+  
+  const glassCardStyle = {
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    borderRadius: '24px',
+    boxShadow: '0 20px 60px rgba(255, 105, 180, 0.15), 0 0 1px rgba(255, 105, 180, 0.1)',
+    border: '1px solid rgba(255, 182, 217, 0.3)',
+    backdropFilter: 'blur(10px)',
+    padding: '40px',
+    marginBottom: '30px',
+    transition: 'all 0.3s ease'
   };
 
-  // Get minimum time (30 minutes from now) in HH:MM format
-  const getMinTime = () => {
-    const now = new Date();
-    now.setMinutes(now.getMinutes() + 30);
-    return now.toTimeString().slice(0, 5);
+  const inputStyle = {
+    width: '100%',
+    padding: '14px 16px',
+    fontSize: '15px',
+    border: '2px solid rgba(255, 182, 193, 0.5)',
+    borderRadius: '12px',
+    backgroundColor: '#FFFFFF', // Explicit white
+    color: '#4A4A4A',
+    outline: 'none',
+    transition: 'border-color 0.3s, box-shadow 0.3s',
+    boxShadow: '0 2px 5px rgba(0,0,0,0.02)'
   };
 
-  // Loading state
-  if (loading) {
-    return (
-      <div style={{ padding: '40px', textAlign: 'center' }}>
-        <h1>🛒 Order Milkshakes</h1>
-        <p>Loading menu options...</p>
-        <div style={{ marginTop: '20px', fontSize: '40px' }}>⏳</div>
-      </div>
-    );
-  }
+  const labelStyle = {
+    display: 'block',
+    marginBottom: '8px',
+    fontWeight: '600',
+    color: '#4A4A4A',
+    fontSize: '14px',
+    letterSpacing: '0.3px'
+  };
 
-  // Error state (initial load)
-  if (error && !lookups.config) {
-    return (
-      <div style={{ padding: '40px', textAlign: 'center' }}>
-        <h1>🛒 Order Milkshakes</h1>
-        <div style={{
-          padding: '20px',
-          backgroundColor: '#f8d7da',
-          border: '1px solid #f5c6cb',
-          borderRadius: '8px',
-          color: '#721c24',
-          marginTop: '20px'
-        }}>
-          ❌ {error}
-        </div>
-        <button 
-          onClick={fetchLookups}
-          style={{
-            marginTop: '20px',
-            padding: '10px 20px',
-            backgroundColor: '#007bff',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer'
-          }}
-        >
-          Retry
-        </button>
-      </div>
-    );
-  }
+  const primaryBtnStyle = {
+    padding: '16px 40px',
+    fontSize: '16px',
+    background: 'linear-gradient(135deg, #FF1493 0%, #FF69B4 100%)',
+    color: 'white',
+    border: 'none',
+    borderRadius: '12px',
+    cursor: 'pointer',
+    fontWeight: '600',
+    boxShadow: '0 8px 24px rgba(255, 20, 147, 0.3)',
+    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+    letterSpacing: '0.5px'
+  };
 
-  // Order Success Screen
-  if (orderSuccess && orderResult) {
-    return (
-      <div style={{ padding: '40px', maxWidth: '800px', margin: '0 auto' }}>
-        <div style={{
-          textAlign: 'center',
-          padding: '40px',
-          backgroundColor: '#d4edda',
-          border: '2px solid #c3e6cb',
-          borderRadius: '8px'
-        }}>
-          <div style={{ fontSize: '64px', marginBottom: '20px' }}>✅</div>
-          <h1 style={{ color: '#155724' }}>Order Placed Successfully!</h1>
-          <p style={{ fontSize: '18px', marginTop: '20px' }}>
-            Thank you, <strong>{user.firstname}</strong>! Your order has been received.
+  const secondaryBtnStyle = {
+    padding: '10px 24px',
+    fontSize: '14px',
+    background: 'white',
+    color: '#FF1493',
+    border: '2px solid #FF1493',
+    borderRadius: '12px',
+    cursor: 'pointer',
+    fontWeight: '600',
+    transition: 'all 0.3s ease',
+    boxShadow: '0 4px 12px rgba(255, 20, 147, 0.1)'
+  };
+
+  return (
+    <div style={{
+      minHeight: '100vh',
+      background: 'linear-gradient(135deg, #FFE5EC 0%, #FFC2D4 50%, #FFB3C6 100%)',
+      padding: '80px 20px',
+      position: 'relative',
+      overflowX: 'hidden'
+    }}>
+      {/* --- Decorative Background Elements (From Home) --- */}
+      <div style={{ position: 'absolute', top: '5%', left: '-5%', width: '400px', height: '400px', background: 'radial-gradient(circle, rgba(255, 105, 180, 0.15) 0%, transparent 70%)', borderRadius: '50%', filter: 'blur(60px)' }} />
+      <div style={{ position: 'absolute', bottom: '10%', right: '-10%', width: '500px', height: '500px', background: 'radial-gradient(circle, rgba(255, 182, 193, 0.2) 0%, transparent 70%)', borderRadius: '50%', filter: 'blur(80px)' }} />
+      <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '600px', height: '600px', background: 'radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%)', borderRadius: '50%', filter: 'blur(100px)', animation: 'pulse 8s infinite ease-in-out' }} />
+      
+      {/* Floating shapes */}
+      <div style={{ position: 'absolute', top: '15%', left: '10%', width: '60px', height: '60px', background: 'linear-gradient(135deg, rgba(255, 105, 180, 0.2) 0%, rgba(255, 20, 147, 0.1) 100%)', borderRadius: '50% 50% 50% 0', transform: 'rotate(-45deg)', animation: 'float 6s infinite ease-in-out' }} />
+      <div style={{ position: 'absolute', top: '70%', right: '15%', width: '45px', height: '45px', background: 'linear-gradient(135deg, rgba(255, 182, 193, 0.25) 0%, rgba(255, 105, 180, 0.15) 100%)', borderRadius: '50% 50% 50% 0', transform: 'rotate(135deg)', animation: 'float 8s infinite ease-in-out 2s' }} />
+
+      {/* --- Main Content --- */}
+      <div style={{ maxWidth: '1000px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
+        
+        <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+          <h1 style={{
+            fontSize: '48px',
+            marginBottom: '16px',
+            background: 'linear-gradient(135deg, #FF1493 0%, #FF69B4 50%, #FFB6C1 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            fontWeight: '800',
+            letterSpacing: '-1px'
+          }}>
+            Order Your Milkshake
+          </h1>
+          <p style={{ color: '#4A4A4A', fontSize: '18px', maxWidth: '600px', margin: '0 auto', lineHeight: '1.6' }}>
+             Create your perfect mix, {user?.firstname}. Choose your flavors and we'll handle the rest.
           </p>
         </div>
 
-        <div style={{
-          marginTop: '30px',
-          padding: '30px',
-          backgroundColor: '#fff',
-          border: '1px solid #ddd',
-          borderRadius: '8px'
-        }}>
-          <h2>Order Details</h2>
-          
-          <div style={{ marginTop: '20px' }}>
-            <p><strong>Order ID:</strong> #{orderResult.order.id}</p>
-            <p><strong>Total Amount:</strong> R{orderResult.order.totalAmount.toFixed(2)}</p>
-            <p><strong>Pickup Location:</strong> {orderResult.order.pickUpLocation}</p>
-            <p><strong>Pickup Time:</strong> {new Date(orderResult.order.pickUpTime).toLocaleString()}</p>
-            <p><strong>Payment Status:</strong> {orderResult.order.isPaid ? '✅ Paid' : '⏳ Unpaid'}</p>
+        {/* Loading State */}
+        {loading && (
+          <div style={{ ...glassCardStyle, textAlign: 'center', padding: '60px' }}>
+             <h2 style={{ color: '#FF1493' }}>Loading Menu...</h2>
+             <div style={{ fontSize: '40px', marginTop: '20px' }}>⏳</div>
           </div>
+        )}
 
-          {orderResult.emailSent && (
-            <div style={{
-              marginTop: '20px',
-              padding: '15px',
-              backgroundColor: '#d1ecf1',
-              border: '1px solid #bee5eb',
-              borderRadius: '4px',
-              color: '#0c5460'
+        {/* Error State */}
+        {error && !loading && (
+          <div style={{ 
+            ...glassCardStyle, 
+            backgroundColor: 'rgba(255, 235, 238, 0.95)', 
+            border: '2px solid #FFCDD2',
+            textAlign: 'center' 
+          }}>
+             <h3 style={{ color: '#C62828' }}>❌ {error}</h3>
+             {!lookups.config && (
+                <button onClick={fetchLookups} style={{ ...secondaryBtnStyle, marginTop: '20px' }}>Retry</button>
+             )}
+          </div>
+        )}
+
+        {/* Success State */}
+        {orderSuccess && orderResult && (
+          <div style={{ ...glassCardStyle, borderTop: '4px solid #4CAF50', textAlign: 'center' }}>
+            <div style={{ fontSize: '64px', marginBottom: '20px' }}>✅</div>
+            <h2 style={{ color: '#2E7D32', fontSize: '32px' }}>Order Placed Successfully!</h2>
+            <p style={{ fontSize: '18px', color: '#555', margin: '15px 0' }}>
+              We've received your order, <strong>{user.firstname}</strong>.
+            </p>
+            
+            <div style={{ 
+              backgroundColor: '#F1F8E9', 
+              padding: '25px', 
+              borderRadius: '16px', 
+              textAlign: 'left',
+              maxWidth: '600px',
+              margin: '30px auto'
             }}>
-              📧 A confirmation email has been sent to <strong>{user.email}</strong>
-            </div>
-          )}
-
-          <div style={{
-            marginTop: '30px',
-            display: 'flex',
-            gap: '15px',
-            justifyContent: 'center'
-          }}>
-            <button
-              onClick={() => navigate('/my-orders')}
-              style={{
-                padding: '12px 24px',
-                backgroundColor: '#007bff',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                fontWeight: 'bold'
-              }}
-            >
-              View My Orders
-            </button>
-            <button
-              onClick={() => {
-                setOrderSuccess(false);
-                setOrderResult(null);
-                handleReset();
-              }}
-              style={{
-                padding: '12px 24px',
-                backgroundColor: '#28a745',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                fontWeight: 'bold'
-              }}
-            >
-              Place Another Order
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div style={{ padding: '40px', maxWidth: '1200px', margin: '0 auto' }}>
-      <h1>🛒 Order Milkshakes</h1>
-      <p style={{ color: '#666', marginBottom: '30px' }}>
-        Choose your custom milkshakes from our menu
-      </p>
-
-      {/* Error display */}
-      {error && (
-        <div style={{
-          padding: '15px',
-          backgroundColor: '#f8d7da',
-          border: '1px solid #f5c6cb',
-          borderRadius: '4px',
-          color: '#721c24',
-          marginBottom: '20px'
-        }}>
-          ❌ {error}
-        </div>
-      )}
-
-      {/* Step 1: Select number of drinks */}
-      {!showDrinkContainers && (
-        <div style={{
-          padding: '30px',
-          backgroundColor: '#f8f9fa',
-          borderRadius: '8px',
-          border: '1px solid #ddd'
-        }}>
-          <h2 style={{ marginBottom: '20px' }}>Step 1: How many drinks?</h2>
-          
-          <div style={{ marginBottom: '20px' }}>
-            <label style={{ display: 'block', marginBottom: '10px', fontWeight: 'bold' }}>
-              Number of Drinks (1 - {lookups.config?.maxDrinks || 10})
-            </label>
-            <input
-              type="number"
-              min="1"
-              max={lookups.config?.maxDrinks || 10}
-              value={numberOfDrinks}
-              onChange={handleNumberChange}
-              style={{
-                padding: '12px',
-                fontSize: '18px',
-                width: '200px',
-                border: '2px solid #007bff',
-                borderRadius: '4px'
-              }}
-            />
-          </div>
-
-          <button
-            onClick={handleNextClick}
-            style={{
-              padding: '12px 30px',
-              backgroundColor: '#28a745',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              fontSize: '16px',
-              cursor: 'pointer',
-              fontWeight: 'bold'
-            }}
-            onMouseEnter={(e) => e.target.style.backgroundColor = '#218838'}
-            onMouseLeave={(e) => e.target.style.backgroundColor = '#28a745'}
-          >
-            Next: Select Drinks →
-          </button>
-        </div>
-      )}
-
-      {/* Step 2: Drink containers */}
-      {showDrinkContainers && !showCheckout && (
-        <div>
-          <div style={{ 
-            display: 'flex', 
-            justifyContent: 'space-between', 
-            alignItems: 'center',
-            marginBottom: '30px'
-          }}>
-            <h2>Step 2: Customize Your Drinks</h2>
-            <button
-              onClick={handleReset}
-              style={{
-                padding: '8px 16px',
-                backgroundColor: '#6c757d',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer'
-              }}
-            >
-              ← Start Over
-            </button>
-          </div>
-
-          {/* Drink Containers */}
-          <div style={{ display: 'grid', gap: '30px' }}>
-            {drinks.map((drink, index) => (
-              <div
-                key={index}
-                style={{
-                  padding: '25px',
-                  backgroundColor: '#fff',
-                  border: '2px solid #007bff',
-                  borderRadius: '8px',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-                }}
-              >
-                <h3 style={{ marginBottom: '20px', color: '#007bff' }}>
-                  🥤 Drink #{index + 1}
-                </h3>
-
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
-                  {/* Flavour Selection */}
-                  <div>
-                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>
-                      Flavour *
-                    </label>
-                    <select
-                      value={drink.flavourId}
-                      onChange={(e) => handleDrinkChange(index, 'flavourId', e.target.value)}
-                      style={{
-                        width: '100%',
-                        padding: '10px',
-                        border: '1px solid #ccc',
-                        borderRadius: '4px',
-                        fontSize: '14px'
-                      }}
-                    >
-                      <option value="">-- Select Flavour --</option>
-                      {lookups.flavours.map(flavour => (
-                        <option key={flavour.id} value={flavour.id}>
-                          {flavour.name} (R{flavour.fee.toFixed(2)})
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {/* Topping Selection */}
-                  <div>
-                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>
-                      Topping *
-                    </label>
-                    <select
-                      value={drink.toppingId}
-                      onChange={(e) => handleDrinkChange(index, 'toppingId', e.target.value)}
-                      style={{
-                        width: '100%',
-                        padding: '10px',
-                        border: '1px solid #ccc',
-                        borderRadius: '4px',
-                        fontSize: '14px'
-                      }}
-                    >
-                      <option value="">-- Select Topping --</option>
-                      {lookups.toppings.map(topping => (
-                        <option key={topping.id} value={topping.id}>
-                          {topping.name} (R{topping.fee.toFixed(2)})
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {/* Consistency Selection */}
-                  <div>
-                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>
-                      Consistency *
-                    </label>
-                    <select
-                      value={drink.consistencyId}
-                      onChange={(e) => handleDrinkChange(index, 'consistencyId', e.target.value)}
-                      style={{
-                        width: '100%',
-                        padding: '10px',
-                        border: '1px solid #ccc',
-                        borderRadius: '4px',
-                        fontSize: '14px'
-                      }}
-                    >
-                      <option value="">-- Select Consistency --</option>
-                      {lookups.consistencies.map(consistency => (
-                        <option key={consistency.id} value={consistency.id}>
-                          {consistency.name} (R{consistency.fee.toFixed(2)})
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-
-                {/* Price Display */}
-                {drink.price > 0 && (
-                  <div style={{
-                    marginTop: '20px',
-                    padding: '15px',
-                    backgroundColor: '#d4edda',
-                    border: '1px solid #c3e6cb',
-                    borderRadius: '4px'
-                  }}>
-                    <strong>Price for this drink: R{drink.price.toFixed(2)}</strong>
-                  </div>
-                )}
+              <h3 style={{ color: '#2E7D32', borderBottom: '1px solid #C8E6C9', paddingBottom: '10px' }}>Order Details #{orderResult.order.id}</h3>
+              <div style={{ display: 'grid', gap: '10px', marginTop: '15px', color: '#333' }}>
+                <div><strong>Total:</strong> R{orderResult.order.totalAmount.toFixed(2)}</div>
+                <div><strong>Location:</strong> {orderResult.order.pickUpLocation}</div>
+                <div><strong>Pickup:</strong> {new Date(orderResult.order.pickUpTime).toLocaleString()}</div>
               </div>
-            ))}
-          </div>
-
-          {/* Continue button */}
-          {allDrinksComplete() && (
-            <div style={{ marginTop: '30px', textAlign: 'center' }}>
-              <button
-                onClick={handleCalculateTotal}
-                disabled={calculationLoading}
-                style={{
-                  padding: '15px 40px',
-                  backgroundColor: calculationLoading ? '#ccc' : '#007bff',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '4px',
-                  fontSize: '18px',
-                  cursor: calculationLoading ? 'not-allowed' : 'pointer',
-                  fontWeight: 'bold',
-                  boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
-                }}
-                onMouseEnter={(e) => {
-                  if (!calculationLoading) e.target.style.backgroundColor = '#0056b3';
-                }}
-                onMouseLeave={(e) => {
-                  if (!calculationLoading) e.target.style.backgroundColor = '#007bff';
-                }}
-              >
-                {calculationLoading ? 'Calculating...' : 'Continue to Checkout →'}
-              </button>
-              <p style={{ marginTop: '15px', color: '#666', fontSize: '14px' }}>
-                We'll calculate your total, including discounts and VAT, in the next step
-              </p>
             </div>
-          )}
-        </div>
-      )}
 
-      {/* Step 3: Checkout */}
-      {showCheckout && calculation && (
-        <div>
-          <div style={{ 
-            display: 'flex', 
-            justifyContent: 'space-between', 
-            alignItems: 'center',
-            marginBottom: '30px'
-          }}>
-            <h2>Step 3: Checkout</h2>
-            <button
-              onClick={handleBackToDrinks}
-              style={{
-                padding: '8px 16px',
-                backgroundColor: '#6c757d',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer'
-              }}
-            >
-              ← Back to Drinks
+            <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', flexWrap: 'wrap' }}>
+               <button onClick={() => navigate('/my-orders')} style={{ ...secondaryBtnStyle, borderColor: '#4CAF50', color: '#4CAF50' }}>
+                 View My Orders
+               </button>
+               <button onClick={() => { setOrderSuccess(false); setOrderResult(null); handleReset(); }} style={{ ...primaryBtnStyle, background: '#4CAF50' }}>
+                 Place Another Order
+               </button>
+            </div>
+          </div>
+        )}
+
+        {/* Step 1: Quantity */}
+        {!loading && !orderSuccess && !showDrinkContainers && (
+          <div style={{ ...glassCardStyle, textAlign: 'center', padding: '60px 40px' }}>
+            <h2 style={{ color: '#2D2D2D', marginBottom: '30px' }}>How many drinks are you ordering?</h2>
+            
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '20px', marginBottom: '40px' }}>
+              <input
+                type="number"
+                min="1"
+                max={lookups.config?.maxDrinks || 10}
+                value={numberOfDrinks}
+                onChange={handleNumberChange}
+                style={{ ...inputStyle, width: '120px', fontSize: '24px', textAlign: 'center', padding: '15px' }}
+              />
+            </div>
+            
+            <button onClick={handleNextClick} style={primaryBtnStyle}>
+              Start Customizing →
             </button>
           </div>
+        )}
 
-          {/* Order Summary */}
-          <div style={{
-            padding: '30px',
-            backgroundColor: '#fff',
-            border: '2px solid #007bff',
-            borderRadius: '8px',
-            marginBottom: '30px'
-          }}>
-            <h3 style={{ marginBottom: '20px' }}>Order Summary</h3>
+        {/* Step 2: Drinks Config */}
+        {!loading && !orderSuccess && showDrinkContainers && !showCheckout && (
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <h2 style={{ color: '#2D2D2D', margin: 0 }}>Customize Drinks</h2>
+              <button onClick={handleReset} style={{ ...secondaryBtnStyle, padding: '8px 16px' }}>← Restart</button>
+            </div>
 
-            {/* Drinks List */}
-            <div style={{ marginBottom: '20px' }}>
-              {calculation.drinks.map((drink, index) => (
-                <div key={index} style={{
-                  padding: '15px',
-                  backgroundColor: '#f8f9fa',
-                  borderRadius: '4px',
-                  marginBottom: '10px'
-                }}>
-                  <strong>Drink #{index + 1}:</strong> {drink.flavour}, {drink.topping}, {drink.consistency}
-                  <div style={{ float: 'right', fontWeight: 'bold' }}>
-                    R{drink.price.toFixed(2)}
+            <div style={{ display: 'grid', gap: '25px' }}>
+              {drinks.map((drink, index) => (
+                <div key={index} style={glassCardStyle}>
+                  <h3 style={{ color: '#FF1493', borderBottom: '1px solid rgba(255, 182, 193, 0.5)', paddingBottom: '15px', marginBottom: '25px' }}>
+                    🥤 Drink #{index + 1}
+                  </h3>
+                  
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '25px' }}>
+                    <div>
+                      <label style={labelStyle}>Flavour</label>
+                      <select value={drink.flavourId} onChange={(e) => handleDrinkChange(index, 'flavourId', e.target.value)} style={inputStyle}>
+                        <option value="">Select Flavour...</option>
+                        {lookups.flavours.map(f => <option key={f.id} value={f.id}>{f.name} (+R{f.fee.toFixed(2)})</option>)}
+                      </select>
+                    </div>
+                    <div>
+                      <label style={labelStyle}>Topping</label>
+                      <select value={drink.toppingId} onChange={(e) => handleDrinkChange(index, 'toppingId', e.target.value)} style={inputStyle}>
+                        <option value="">Select Topping...</option>
+                        {lookups.toppings.map(t => <option key={t.id} value={t.id}>{t.name} (+R{t.fee.toFixed(2)})</option>)}
+                      </select>
+                    </div>
+                    <div>
+                      <label style={labelStyle}>Consistency</label>
+                      <select value={drink.consistencyId} onChange={(e) => handleDrinkChange(index, 'consistencyId', e.target.value)} style={inputStyle}>
+                        <option value="">Select Consistency...</option>
+                        {lookups.consistencies.map(c => <option key={c.id} value={c.id}>{c.name} (+R{c.fee.toFixed(2)})</option>)}
+                      </select>
+                    </div>
                   </div>
+                  
+                  {drink.price > 0 && (
+                    <div style={{ marginTop: '20px', textAlign: 'right', fontWeight: 'bold', color: '#4A4A4A' }}>
+                      Price: R{drink.price.toFixed(2)}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
 
-            {/* Price Breakdown */}
-            <div style={{ borderTop: '2px solid #ddd', paddingTop: '20px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
-                <span>Subtotal:</span>
-                <strong>R{calculation.subtotal.toFixed(2)}</strong>
-              </div>
-
-              {calculation.discount && calculation.discount.amount > 0 && (
-                <div style={{ 
-                  display: 'flex', 
-                  justifyContent: 'space-between', 
-                  marginBottom: '10px',
-                  color: '#28a745'
-                }}>
-                  <span>
-                    Discount ({calculation.discount.percentage}% - Tier {calculation.discount.tier}):
-                  </span>
-                  <strong>-R{calculation.discount.amount.toFixed(2)}</strong>
-                </div>
-              )}
-
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
-                <span>Subtotal after discount:</span>
-                <strong>R{calculation.subtotalAfterDiscount.toFixed(2)}</strong>
-              </div>
-
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
-                <span>VAT ({calculation.vat.percentage}%):</span>
-                <strong>R{calculation.vat.amount.toFixed(2)}</strong>
-              </div>
-
-              <div style={{ 
-                display: 'flex', 
-                justifyContent: 'space-between', 
-                fontSize: '24px',
-                marginTop: '20px',
-                paddingTop: '20px',
-                borderTop: '2px solid #007bff'
-              }}>
-                <span><strong>Total Amount:</strong></span>
-                <strong style={{ color: '#007bff' }}>R{calculation.totalAmount.toFixed(2)}</strong>
-              </div>
-            </div>
-
-            {/* Discount Info */}
-            {calculation.discount && calculation.discount.amount > 0 && (
-              <div style={{
-                marginTop: '20px',
-                padding: '15px',
-                backgroundColor: '#d4edda',
-                border: '1px solid #c3e6cb',
-                borderRadius: '4px'
-              }}>
-                🎉 You've earned a <strong>{calculation.discount.percentage}% discount</strong> as a frequent customer!
-                (Tier {calculation.discount.tier} - {calculation.discount.qualifyingOrders} qualifying orders)
+            {allDrinksComplete() && (
+              <div style={{ textAlign: 'center', marginTop: '20px' }}>
+                <button onClick={handleCalculateTotal} disabled={calculationLoading} style={primaryBtnStyle}>
+                  {calculationLoading ? 'Calculating...' : 'Review Order →'}
+                </button>
               </div>
             )}
           </div>
+        )}
 
-          {/* Pickup Details Form */}
-          <div style={{
-            padding: '30px',
-            backgroundColor: '#f8f9fa',
-            borderRadius: '8px',
-            border: '1px solid #ddd'
-          }}>
-            <h3 style={{ marginBottom: '20px' }}>Pickup Details</h3>
-
-            {/* Pickup Location */}
-            <div style={{ marginBottom: '20px' }}>
-              <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>
-                Pickup Location *
-              </label>
-              <select
-                value={pickupLocation}
-                onChange={(e) => setPickupLocation(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '10px',
-                  border: '1px solid #ccc',
-                  borderRadius: '4px',
-                  fontSize: '14px'
-                }}
-              >
-                <option value="">-- Select Location --</option>
-                <option value="Milky Shaky - V&A Waterfront">Milky Shaky - V&A Waterfront</option>
-                <option value="Milky Shaky - Century City">Milky Shaky - Century City</option>
-                <option value="Milky Shaky - Tyger Valley">Milky Shaky - Tyger Valley</option>
-                <option value="Milky Shaky - Cavendish Square">Milky Shaky - Cavendish Square</option>
-                <option value="Milky Shaky - Canal Walk">Milky Shaky - Canal Walk</option>
-              </select>
+        {/* Step 3: Checkout */}
+        {!loading && !orderSuccess && showCheckout && calculation && (
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <h2 style={{ color: '#2D2D2D', margin: 0 }}>Checkout</h2>
+              <button onClick={handleBackToDrinks} style={{ ...secondaryBtnStyle, padding: '8px 16px' }}>← Edit</button>
             </div>
 
-            {/* Pickup Date */}
-            <div style={{ marginBottom: '20px' }}>
-              <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>
-                Pickup Date *
-              </label>
-              <input
-                type="date"
-                value={pickupDate}
-                onChange={(e) => setPickupDate(e.target.value)}
-                min={getMinDate()}
-                style={{
-                  width: '100%',
-                  padding: '10px',
-                  border: '1px solid #ccc',
-                  borderRadius: '4px',
-                  fontSize: '14px'
-                }}
-              />
-            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '30px' }}>
+              
+              {/* Left Column: Summary */}
+              <div style={glassCardStyle}>
+                <h3 style={{ marginBottom: '20px', color: '#4A4A4A' }}>Order Summary</h3>
+                <div style={{ maxHeight: '300px', overflowY: 'auto', paddingRight: '10px' }}>
+                  {calculation.drinks.map((drink, index) => (
+                    <div key={index} style={{ padding: '15px', backgroundColor: '#FFF', borderRadius: '12px', marginBottom: '10px', boxShadow: '0 2px 4px rgba(0,0,0,0.03)', border: '1px solid #F0F0F0' }}>
+                      <div style={{ fontSize: '14px', color: '#666', marginBottom: '5px' }}>Drink #{index + 1}</div>
+                      <div style={{ fontWeight: '600', color: '#2D2D2D' }}>{drink.flavour}, {drink.topping}</div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '5px', fontSize: '13px' }}>
+                        <span style={{color: '#888'}}>{drink.consistency}</span>
+                        <span style={{fontWeight: 'bold'}}>R{drink.price.toFixed(2)}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
 
-            {/* Pickup Time */}
-            <div style={{ marginBottom: '20px' }}>
-              <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>
-                Pickup Time *
-              </label>
-              <input
-                type="time"
-                value={pickupTime}
-                onChange={(e) => setPickupTime(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '10px',
-                  border: '1px solid #ccc',
-                  borderRadius: '4px',
-                  fontSize: '14px'
-                }}
-              />
-              <small style={{ color: '#666', fontSize: '12px' }}>
-                Must be at least 30 minutes from now
-              </small>
-            </div>
+                <div style={{ borderTop: '2px solid rgba(255, 182, 193, 0.3)', paddingTop: '20px', marginTop: '20px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', color: '#666' }}>
+                    <span>Subtotal</span>
+                    <span>R{calculation.subtotal.toFixed(2)}</span>
+                  </div>
+                  {calculation.discount && calculation.discount.amount > 0 && (
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', color: '#2E7D32' }}>
+                      <span>Discount ({calculation.discount.percentage}%)</span>
+                      <span>-R{calculation.discount.amount.toFixed(2)}</span>
+                    </div>
+                  )}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', color: '#666' }}>
+                    <span>VAT</span>
+                    <span>R{calculation.vat.amount.toFixed(2)}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '15px', fontSize: '20px', fontWeight: '800', color: '#FF1493' }}>
+                    <span>Total</span>
+                    <span>R{calculation.totalAmount.toFixed(2)}</span>
+                  </div>
+                </div>
+              </div>
 
-            {/* Submit Button */}
-            <button
-              onClick={handleSubmitOrder}
-              disabled={submitting}
-              style={{
-                width: '100%',
-                padding: '15px',
-                backgroundColor: submitting ? '#ccc' : '#28a745',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                fontSize: '18px',
-                cursor: submitting ? 'not-allowed' : 'pointer',
-                fontWeight: 'bold',
-                marginTop: '10px'
-              }}
-            >
-              {submitting ? 'Placing Order...' : `Place Order - R${calculation.totalAmount.toFixed(2)}`}
-            </button>
+              {/* Right Column: Details */}
+              <div style={glassCardStyle}>
+                <h3 style={{ marginBottom: '20px', color: '#4A4A4A' }}>Pickup Details</h3>
+                
+                <div style={{ marginBottom: '20px' }}>
+                  <label style={labelStyle}>Location *</label>
+                  <select value={pickupLocation} onChange={(e) => setPickupLocation(e.target.value)} style={inputStyle}>
+                    <option value="">Select Location...</option>
+                    <option value="Milky Shaky - V&A Waterfront">Milky Shaky - V&A Waterfront</option>
+                    <option value="Milky Shaky - Century City">Milky Shaky - Century City</option>
+                    <option value="Milky Shaky - Tyger Valley">Milky Shaky - Tyger Valley</option>
+                    <option value="Milky Shaky - Cavendish Square">Milky Shaky - Cavendish Square</option>
+                    <option value="Milky Shaky - Canal Walk">Milky Shaky - Canal Walk</option>
+                  </select>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '10px' }}>
+                  <div>
+                    <label style={labelStyle}>Date *</label>
+                    <input type="date" value={pickupDate} min={getMinDate()} onChange={(e) => setPickupDate(e.target.value)} style={inputStyle} />
+                  </div>
+                  <div>
+                    <label style={labelStyle}>Time *</label>
+                    <input type="time" value={pickupTime} onChange={(e) => setPickupTime(e.target.value)} style={inputStyle} />
+                  </div>
+                </div>
+                <div style={{ fontSize: '13px', color: '#888', fontStyle: 'italic', marginBottom: '30px' }}>
+                   * Minimum 30 mins from now
+                </div>
+
+                <button onClick={handleSubmitOrder} disabled={submitting} style={{ ...primaryBtnStyle, width: '100%' }}>
+                  {submitting ? 'Processing...' : `Pay R${calculation.totalAmount.toFixed(2)}`}
+                </button>
+              </div>
+
+            </div>
           </div>
-        </div>
-      )}
+        )}
+
+      </div>
+
+      {/* Styles for animation definitions (floats and pulses) */}
+      <style>{`
+        @keyframes float {
+          0%, 100% { transform: translateY(0px) rotate(-45deg); }
+          50% { transform: translateY(-25px) rotate(-45deg); }
+        }
+        @keyframes pulse {
+          0%, 100% { opacity: 0.3; transform: translate(-50%, -50%) scale(1); }
+          50% { opacity: 0.5; transform: translate(-50%, -50%) scale(1.1); }
+        }
+      `}</style>
     </div>
   );
 }

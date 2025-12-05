@@ -141,6 +141,185 @@ function Reports() {
     }));
   };
 
+  // ==================== STYLES ====================
+
+  const style = {
+    // Layout
+    pageWrapper: {
+      minHeight: '100vh',
+      padding: '40px 20px',
+      background: 'linear-gradient(135deg, #FFE5EC 0%, #FFF0F5 50%, #FFFFFF 100%)',
+      fontFamily: '"Segoe UI", Tahoma, Geneva, Verdana, sans-serif',
+      color: '#2D2D2D',
+    },
+    container: {
+      maxWidth: '1400px',
+      margin: '0 auto',
+      backgroundColor: '#FFFFFF',
+      borderRadius: '50px',
+      padding: '50px',
+      boxShadow: '0 10px 30px rgba(255, 105, 180, 0.2)',
+    },
+    header: {
+      marginBottom: '40px',
+      borderBottom: '2px solid #FFE5EC',
+      paddingBottom: '20px',
+      textAlign: 'center',
+    },
+    title: {
+      fontSize: '2.5rem',
+      color: '#FF69B4',
+      margin: '0 0 10px 0',
+      fontWeight: 'bold',
+      textShadow: '2px 2px 0px rgba(255,182,217, 0.3)',
+    },
+    subtitle: {
+      color: '#6B6B6B',
+      fontSize: '1.1rem',
+    },
+    // Tabs
+    tabsContainer: {
+      display: 'flex',
+      justifyContent: 'center',
+      gap: '15px',
+      marginBottom: '40px',
+      flexWrap: 'wrap',
+    },
+    tabButton: (isActive) => ({
+      padding: '12px 30px',
+      backgroundColor: isActive ? '#FF69B4' : 'transparent',
+      color: isActive ? '#FFFFFF' : '#FF69B4',
+      border: isActive ? '2px solid #FF69B4' : '2px solid #FFE5EC',
+      borderRadius: '25px',
+      cursor: 'pointer',
+      fontWeight: 'bold',
+      fontSize: '1rem',
+      transition: 'all 0.3s',
+      outline: 'none',
+    }),
+    // Cards & Filters
+    card: {
+      backgroundColor: '#FFFFFF',
+      borderRadius: '20px',
+      border: '2px solid #FFE5EC',
+      padding: '30px',
+      marginBottom: '30px',
+      boxShadow: '0 5px 15px rgba(0,0,0,0.02)',
+    },
+    filtersGrid: {
+      display: 'grid',
+      gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+      gap: '20px',
+      marginBottom: '20px',
+    },
+    // Inputs & Buttons
+    label: {
+      display: 'block',
+      marginBottom: '8px',
+      fontWeight: '600',
+      color: '#2D2D2D',
+      fontSize: '0.9rem',
+    },
+    input: {
+      width: '100%',
+      padding: '12px',
+      border: '2px solid #FFE5EC',
+      borderRadius: '12px',
+      fontSize: '0.95rem',
+      color: '#2D2D2D',
+      outline: 'none',
+      backgroundColor: '#FAFAFA',
+      transition: 'border-color 0.3s',
+    },
+    primaryButton: {
+      padding: '12px 30px',
+      backgroundColor: '#FF69B4',
+      color: 'white',
+      border: 'none',
+      borderRadius: '25px',
+      cursor: 'pointer',
+      fontWeight: 'bold',
+      fontSize: '0.9rem',
+      boxShadow: '0 4px 10px rgba(255, 105, 180, 0.2)',
+      transition: 'transform 0.2s',
+      width: '100%',
+    },
+    // Stats Cards
+    statsGrid: {
+      display: 'grid',
+      gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+      gap: '20px',
+      marginBottom: '30px',
+    },
+    statCard: (color) => ({
+      padding: '25px',
+      backgroundColor: '#FFFFFF',
+      border: `2px solid ${color}`,
+      borderRadius: '20px',
+      textAlign: 'center',
+      boxShadow: '0 5px 15px rgba(0,0,0,0.03)',
+    }),
+    statLabel: {
+      fontSize: '0.9rem',
+      color: '#6B6B6B',
+      marginBottom: '10px',
+      fontWeight: '600',
+      textTransform: 'uppercase',
+      letterSpacing: '1px',
+    },
+    statValue: (color) => ({
+      fontSize: '2rem',
+      fontWeight: 'bold',
+      color: color,
+    }),
+    // Tables
+    tableWrapper: {
+      borderRadius: '20px',
+      border: '2px solid #FFE5EC',
+      overflow: 'hidden',
+    },
+    table: {
+      width: '100%',
+      borderCollapse: 'collapse',
+      backgroundColor: '#FFFFFF',
+    },
+    th: {
+      padding: '18px 20px',
+      textAlign: 'left',
+      backgroundColor: '#FFF0F5', // Light pink
+      color: '#FF69B4',
+      fontWeight: 'bold',
+      fontSize: '0.9rem',
+      textTransform: 'uppercase',
+      borderBottom: '2px solid #FFE5EC',
+    },
+    td: {
+      padding: '18px 20px',
+      color: '#2D2D2D',
+      borderBottom: '1px solid #FFE5EC',
+      fontSize: '0.95rem',
+    },
+    // Status Pills
+    pill: (bg, color) => ({
+      padding: '6px 14px',
+      borderRadius: '20px',
+      fontSize: '0.8rem',
+      fontWeight: 'bold',
+      backgroundColor: bg,
+      color: color,
+      display: 'inline-block',
+    }),
+    // Empty State
+    emptyState: {
+      padding: '60px',
+      textAlign: 'center',
+      backgroundColor: '#FFF0F5',
+      borderRadius: '20px',
+      border: '2px dashed #FFB6D9',
+      color: '#6B6B6B',
+    },
+  };
+
   // ==================== RENDER FUNCTIONS ====================
 
   const renderOrdersReport = () => {
@@ -148,76 +327,47 @@ function Reports() {
 
     return (
       <div>
-        <h2 style={{ marginBottom: '20px' }}>📊 All Orders Report</h2>
+        <div style={{ marginBottom: '25px', borderLeft: '5px solid #FF69B4', paddingLeft: '15px' }}>
+          <h2 style={{ fontSize: '1.5rem', margin: 0, color: '#2D2D2D' }}>All Orders Report</h2>
+        </div>
 
         {/* Filters */}
-        <div style={{
-          padding: '25px',
-          backgroundColor: '#f8f9fa',
-          borderRadius: '8px',
-          border: '1px solid #ddd',
-          marginBottom: '30px'
-        }}>
-          <h3 style={{ marginBottom: '20px' }}>Filters</h3>
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            gap: '20px',
-            marginBottom: '20px'
-          }}>
+        <div style={style.card}>
+          <h3 style={{ ...style.label, fontSize: '1.1rem', marginBottom: '20px' }}>Filter Options</h3>
+          <div style={style.filtersGrid}>
             <div>
-              <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>
-                Start Date
-              </label>
+              <label style={style.label}>Start Date</label>
               <input
                 type="date"
                 name="startDate"
                 value={orderFilters.startDate}
                 onChange={handleOrderFilterChange}
-                style={{
-                  width: '100%',
-                  padding: '10px',
-                  border: '1px solid #ccc',
-                  borderRadius: '4px',
-                  fontSize: '14px'
-                }}
+                style={style.input}
+                onFocus={(e) => e.target.style.borderColor = '#FF69B4'}
+                onBlur={(e) => e.target.style.borderColor = '#FFE5EC'}
               />
             </div>
-
             <div>
-              <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>
-                End Date
-              </label>
+              <label style={style.label}>End Date</label>
               <input
                 type="date"
                 name="endDate"
                 value={orderFilters.endDate}
                 onChange={handleOrderFilterChange}
-                style={{
-                  width: '100%',
-                  padding: '10px',
-                  border: '1px solid #ccc',
-                  borderRadius: '4px',
-                  fontSize: '14px'
-                }}
+                style={style.input}
+                onFocus={(e) => e.target.style.borderColor = '#FF69B4'}
+                onBlur={(e) => e.target.style.borderColor = '#FFE5EC'}
               />
             </div>
-
             <div>
-              <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>
-                Payment Status
-              </label>
+              <label style={style.label}>Payment Status</label>
               <select
                 name="isPaid"
                 value={orderFilters.isPaid}
                 onChange={handleOrderFilterChange}
-                style={{
-                  width: '100%',
-                  padding: '10px',
-                  border: '1px solid #ccc',
-                  borderRadius: '4px',
-                  fontSize: '14px'
-                }}
+                style={style.input}
+                onFocus={(e) => e.target.style.borderColor = '#FF69B4'}
+                onBlur={(e) => e.target.style.borderColor = '#FFE5EC'}
               >
                 <option value="">All Orders</option>
                 <option value="true">Paid Only</option>
@@ -225,167 +375,92 @@ function Reports() {
               </select>
             </div>
           </div>
-
           <button
             onClick={fetchAllOrders}
             disabled={ordersLoading}
-            style={{
-              padding: '10px 30px',
-              backgroundColor: ordersLoading ? '#ccc' : '#007bff',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: ordersLoading ? 'not-allowed' : 'pointer',
-              fontWeight: 'bold'
-            }}
+            style={{ ...style.primaryButton, opacity: ordersLoading ? 0.7 : 1 }}
           >
-            {ordersLoading ? 'Loading...' : '🔍 Generate Report'}
+            {ordersLoading ? 'Loading...' : 'Generate Report'}
           </button>
         </div>
 
-        {/* Error Message */}
         {ordersError && (
-          <div style={{
-            padding: '15px',
-            backgroundColor: '#f8d7da',
-            border: '1px solid #f5c6cb',
-            borderRadius: '4px',
-            color: '#721c24',
-            marginBottom: '20px'
-          }}>
-            ❌ {ordersError}
+          <div style={{ ...style.pill('#FFF0F0', '#D32F2F'), display: 'block', textAlign: 'center', marginBottom: '20px', padding: '15px' }}>
+            {ordersError}
           </div>
         )}
 
         {/* Statistics Cards */}
         {orders.length > 0 && (
           <>
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-              gap: '20px',
-              marginBottom: '30px'
-            }}>
-              <div style={{
-                padding: '20px',
-                backgroundColor: '#007bff',
-                color: 'white',
-                borderRadius: '8px',
-                textAlign: 'center'
-              }}>
-                <div style={{ fontSize: '14px', marginBottom: '10px' }}>Total Orders</div>
-                <div style={{ fontSize: '32px', fontWeight: 'bold' }}>{stats.totalOrders}</div>
+            <div style={style.statsGrid}>
+              <div style={style.statCard('#FF69B4')}>
+                <div style={style.statLabel}>Total Orders</div>
+                <div style={style.statValue('#FF69B4')}>{stats.totalOrders}</div>
               </div>
-
-              <div style={{
-                padding: '20px',
-                backgroundColor: '#28a745',
-                color: 'white',
-                borderRadius: '8px',
-                textAlign: 'center'
-              }}>
-                <div style={{ fontSize: '14px', marginBottom: '10px' }}>Total Revenue</div>
-                <div style={{ fontSize: '32px', fontWeight: 'bold' }}>R{stats.totalRevenue.toFixed(2)}</div>
+              <div style={style.statCard('#10B981')}> {/* Green for money */}
+                <div style={style.statLabel}>Total Revenue</div>
+                <div style={style.statValue('#10B981')}>R{stats.totalRevenue.toFixed(2)}</div>
               </div>
-
-              <div style={{
-                padding: '20px',
-                backgroundColor: '#17a2b8',
-                color: 'white',
-                borderRadius: '8px',
-                textAlign: 'center'
-              }}>
-                <div style={{ fontSize: '14px', marginBottom: '10px' }}>Paid Orders</div>
-                <div style={{ fontSize: '32px', fontWeight: 'bold' }}>{stats.paidOrders}</div>
+              <div style={style.statCard('#3B82F6')}> {/* Blue */}
+                <div style={style.statLabel}>Paid Orders</div>
+                <div style={style.statValue('#3B82F6')}>{stats.paidOrders}</div>
               </div>
-
-              <div style={{
-                padding: '20px',
-                backgroundColor: '#ffc107',
-                color: '#333',
-                borderRadius: '8px',
-                textAlign: 'center'
-              }}>
-                <div style={{ fontSize: '14px', marginBottom: '10px' }}>Unpaid Orders</div>
-                <div style={{ fontSize: '32px', fontWeight: 'bold' }}>{stats.unpaidOrders}</div>
+              <div style={style.statCard('#F59E0B')}> {/* Amber */}
+                <div style={style.statLabel}>Unpaid Orders</div>
+                <div style={style.statValue('#F59E0B')}>{stats.unpaidOrders}</div>
               </div>
             </div>
 
             {/* Orders Table */}
-            <div style={{ overflowX: 'auto' }}>
-              <table style={{
-                width: '100%',
-                borderCollapse: 'collapse',
-                backgroundColor: '#fff',
-                boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-              }}>
-                <thead>
-                  <tr style={{ backgroundColor: '#007bff', color: 'white' }}>
-                    <th style={{ padding: '15px', textAlign: 'left' }}>Order ID</th>
-                    <th style={{ padding: '15px', textAlign: 'left' }}>Customer</th>
-                    <th style={{ padding: '15px', textAlign: 'left' }}>Date</th>
-                    <th style={{ padding: '15px', textAlign: 'center' }}>Drinks</th>
-                    <th style={{ padding: '15px', textAlign: 'right' }}>Total</th>
-                    <th style={{ padding: '15px', textAlign: 'center' }}>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {orders.map((order, index) => (
-                    <tr
-                      key={order.id}
-                      style={{
-                        borderBottom: '1px solid #ddd',
-                        backgroundColor: index % 2 === 0 ? '#f9f9f9' : '#fff'
-                      }}
-                    >
-                      <td style={{ padding: '15px', fontWeight: 'bold' }}>#{order.id}</td>
-                      <td style={{ padding: '15px' }}>
-                        {order.user.firstname}
-                        <div style={{ fontSize: '12px', color: '#666' }}>{order.user.email}</div>
-                      </td>
-                      <td style={{ padding: '15px', fontSize: '14px' }}>
-                        {formatDate(order.createdAt)}
-                      </td>
-                      <td style={{ padding: '15px', textAlign: 'center' }}>
-                        🥤 {order.drinks.length}
-                      </td>
-                      <td style={{ padding: '15px', textAlign: 'right', fontWeight: 'bold' }}>
-                        R{order.totalAmount.toFixed(2)}
-                      </td>
-                      <td style={{ padding: '15px', textAlign: 'center' }}>
-                        <span style={{
-                          padding: '5px 12px',
-                          borderRadius: '12px',
-                          fontSize: '12px',
-                          fontWeight: 'bold',
-                          backgroundColor: order.isPaid ? '#d4edda' : '#fff3cd',
-                          color: order.isPaid ? '#155724' : '#856404',
-                          border: order.isPaid ? '1px solid #c3e6cb' : '1px solid #ffeeba'
-                        }}>
-                          {order.isPaid ? '✅ Paid' : '⏳ Unpaid'}
-                        </span>
-                      </td>
+            <div style={style.tableWrapper}>
+              <div style={{ overflowX: 'auto' }}>
+                <table style={style.table}>
+                  <thead>
+                    <tr>
+                      <th style={style.th}>Order ID</th>
+                      <th style={style.th}>Customer</th>
+                      <th style={style.th}>Date</th>
+                      <th style={{ ...style.th, textAlign: 'center' }}>Drinks</th>
+                      <th style={{ ...style.th, textAlign: 'right' }}>Total</th>
+                      <th style={{ ...style.th, textAlign: 'center' }}>Status</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {orders.map((order) => (
+                      <tr key={order.id}>
+                        <td style={{ ...style.td, fontWeight: 'bold', color: '#FF69B4' }}>#{order.id}</td>
+                        <td style={style.td}>
+                          <div style={{ fontWeight: '600' }}>{order.user.firstname}</div>
+                          <div style={{ fontSize: '0.85rem', color: '#9CA3AF' }}>{order.user.email}</div>
+                        </td>
+                        <td style={style.td}>{formatDate(order.createdAt)}</td>
+                        <td style={{ ...style.td, textAlign: 'center' }}>
+                           {order.drinks.length}
+                        </td>
+                        <td style={{ ...style.td, textAlign: 'right', fontWeight: 'bold' }}>
+                          R{order.totalAmount.toFixed(2)}
+                        </td>
+                        <td style={{ ...style.td, textAlign: 'center' }}>
+                          <span style={order.isPaid 
+                            ? style.pill('#D1FAE5', '#065F46') 
+                            : style.pill('#FEF3C7', '#92400E')
+                          }>
+                            {order.isPaid ? 'Paid' : 'Unpaid'}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </>
         )}
 
-        {/* No Results */}
         {!ordersLoading && orders.length === 0 && (
-          <div style={{
-            padding: '60px',
-            textAlign: 'center',
-            backgroundColor: '#f8f9fa',
-            borderRadius: '8px',
-            border: '1px solid #ddd'
-          }}>
-            <div style={{ fontSize: '64px', marginBottom: '20px' }}>📭</div>
-            <p style={{ fontSize: '18px', color: '#666' }}>
-              No orders found. Try adjusting your filters or generate a report.
-            </p>
+          <div style={style.emptyState}>
+            <p style={{ fontSize: '1.2rem', margin: 0 }}>No orders found. Adjust filters to generate a report.</p>
           </div>
         )}
       </div>
@@ -397,123 +472,77 @@ function Reports() {
 
     return (
       <div>
-        <h2 style={{ marginBottom: '20px' }}>📈 Day of Week Trend Analysis</h2>
-        <p style={{ color: '#666', marginBottom: '30px' }}>
-          Analyze order volumes by day of the week to identify trends and patterns.
-        </p>
+        <div style={{ marginBottom: '25px', borderLeft: '5px solid #FF69B4', paddingLeft: '15px' }}>
+          <h2 style={{ fontSize: '1.5rem', margin: 0, color: '#2D2D2D' }}>Day of Week Trends</h2>
+          <p style={{ color: '#666', marginTop: '5px' }}>Analyze order volumes to find patterns.</p>
+        </div>
 
         <button
           onClick={fetchDayOfWeekReport}
           disabled={trendsLoading}
-          style={{
-            padding: '12px 30px',
-            backgroundColor: trendsLoading ? '#ccc' : '#007bff',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: trendsLoading ? 'not-allowed' : 'pointer',
-            fontWeight: 'bold',
-            marginBottom: '30px'
-          }}
+          style={{ ...style.primaryButton, width: 'auto', marginBottom: '30px' }}
         >
-          {trendsLoading ? 'Loading...' : '🔍 Generate Trend Report'}
+          {trendsLoading ? 'Loading...' : 'Generate Trend Report'}
         </button>
 
-        {/* Error Message */}
         {trendsError && (
-          <div style={{
-            padding: '15px',
-            backgroundColor: '#f8d7da',
-            border: '1px solid #f5c6cb',
-            borderRadius: '4px',
-            color: '#721c24',
-            marginBottom: '20px'
-          }}>
-            ❌ {trendsError}
+          <div style={{ ...style.pill('#FFF0F0', '#D32F2F'), display: 'block', textAlign: 'center', marginBottom: '20px', padding: '15px' }}>
+            {trendsError}
           </div>
         )}
 
-        {/* Trend Data */}
         {dayOfWeekData && (
           <>
-            {/* Busiest Day Card */}
             {busiestDay && (
-              <div style={{
-                padding: '25px',
-                backgroundColor: '#28a745',
-                color: 'white',
-                borderRadius: '8px',
-                marginBottom: '30px',
-                textAlign: 'center'
-              }}>
-                <div style={{ fontSize: '16px', marginBottom: '10px' }}>🏆 Busiest Day</div>
-                <div style={{ fontSize: '36px', fontWeight: 'bold', marginBottom: '10px' }}>
-                  {busiestDay.day}
-                </div>
-                <div style={{ fontSize: '18px' }}>
+              <div style={{ ...style.card, background: 'linear-gradient(135deg, #FF69B4 0%, #E91E63 100%)', border: 'none', color: 'white', textAlign: 'center' }}>
+                <div style={{ fontSize: '1rem', opacity: 0.9, marginBottom: '10px' }}>Busiest Day</div>
+                <div style={{ fontSize: '3rem', fontWeight: 'bold', marginBottom: '5px' }}>{busiestDay.day}</div>
+                <div style={{ fontSize: '1.2rem', opacity: 0.9 }}>
                   {busiestDay.data.orders} orders • {busiestDay.data.drinks} drinks
                 </div>
               </div>
             )}
 
-            {/* Day of Week Table */}
-            <div style={{ overflowX: 'auto' }}>
-              <table style={{
-                width: '100%',
-                borderCollapse: 'collapse',
-                backgroundColor: '#fff',
-                boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-              }}>
-                <thead>
-                  <tr style={{ backgroundColor: '#007bff', color: 'white' }}>
-                    <th style={{ padding: '15px', textAlign: 'left' }}>Day of Week</th>
-                    <th style={{ padding: '15px', textAlign: 'center' }}>Total Orders</th>
-                    <th style={{ padding: '15px', textAlign: 'center' }}>Total Drinks</th>
-                    <th style={{ padding: '15px', textAlign: 'center' }}>Avg Drinks/Order</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {Object.entries(dayOfWeekData).map(([day, data], index) => (
-                    <tr
-                      key={day}
-                      style={{
-                        borderBottom: '1px solid #ddd',
-                        backgroundColor: index % 2 === 0 ? '#f9f9f9' : '#fff'
-                      }}
-                    >
-                      <td style={{ padding: '15px', fontWeight: 'bold' }}>
-                        {day}
-                        {busiestDay?.day === day && (
-                          <span style={{
-                            marginLeft: '10px',
-                            padding: '3px 8px',
-                            backgroundColor: '#28a745',
-                            color: 'white',
-                            borderRadius: '12px',
-                            fontSize: '11px'
-                          }}>
-                            🏆 Busiest
-                          </span>
-                        )}
-                      </td>
-                      <td style={{ padding: '15px', textAlign: 'center', fontSize: '18px', fontWeight: 'bold' }}>
-                        {data.orders}
-                      </td>
-                      <td style={{ padding: '15px', textAlign: 'center', fontSize: '18px', fontWeight: 'bold' }}>
-                        {data.drinks}
-                      </td>
-                      <td style={{ padding: '15px', textAlign: 'center' }}>
-                        {data.orders > 0 ? (data.drinks / data.orders).toFixed(1) : '0.0'}
-                      </td>
+            <div style={style.tableWrapper}>
+                <div style={{ overflowX: 'auto' }}>
+                <table style={style.table}>
+                  <thead>
+                    <tr>
+                      <th style={style.th}>Day of Week</th>
+                      <th style={{ ...style.th, textAlign: 'center' }}>Total Orders</th>
+                      <th style={{ ...style.th, textAlign: 'center' }}>Total Drinks</th>
+                      <th style={{ ...style.th, textAlign: 'center' }}>Avg Drinks/Order</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {Object.entries(dayOfWeekData).map(([day, data]) => (
+                      <tr key={day}>
+                        <td style={{ ...style.td, fontWeight: 'bold' }}>
+                          {day}
+                          {busiestDay?.day === day && (
+                            <span style={{ marginLeft: '10px', ...style.pill('#D1FAE5', '#065F46') }}>
+                              Busiest
+                            </span>
+                          )}
+                        </td>
+                        <td style={{ ...style.td, textAlign: 'center', fontWeight: 'bold', color: '#FF69B4' }}>
+                          {data.orders}
+                        </td>
+                        <td style={{ ...style.td, textAlign: 'center' }}>
+                          {data.drinks}
+                        </td>
+                        <td style={{ ...style.td, textAlign: 'center', color: '#6B6B6B' }}>
+                          {data.orders > 0 ? (data.drinks / data.orders).toFixed(1) : '0.0'}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
 
-            {/* Visual Bar Chart */}
             <div style={{ marginTop: '40px' }}>
-              <h3 style={{ marginBottom: '20px' }}>📊 Visual Breakdown</h3>
+              <h3 style={{ ...style.label, fontSize: '1.2rem', marginBottom: '20px' }}>Visual Breakdown</h3>
               <div style={{ display: 'grid', gap: '15px' }}>
                 {Object.entries(dayOfWeekData).map(([day, data]) => {
                   const maxOrders = Math.max(...Object.values(dayOfWeekData).map(d => d.orders));
@@ -521,22 +550,23 @@ function Reports() {
 
                   return (
                     <div key={day} style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                      <div style={{ width: '120px', fontWeight: 'bold' }}>{day}</div>
-                      <div style={{ flex: 1, backgroundColor: '#e9ecef', borderRadius: '4px', height: '40px', position: 'relative' }}>
+                      <div style={{ width: '100px', fontWeight: '600', color: '#2D2D2D' }}>{day}</div>
+                      <div style={{ flex: 1, backgroundColor: '#FFF0F5', borderRadius: '15px', height: '35px', overflow: 'hidden' }}>
                         <div style={{
                           width: `${percentage}%`,
                           height: '100%',
-                          backgroundColor: busiestDay?.day === day ? '#28a745' : '#007bff',
-                          borderRadius: '4px',
+                          backgroundColor: busiestDay?.day === day ? '#E91E63' : '#FF69B4',
+                          borderRadius: '15px',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'flex-end',
-                          paddingRight: '10px',
+                          paddingRight: '15px',
                           color: 'white',
                           fontWeight: 'bold',
-                          transition: 'width 0.3s ease'
+                          fontSize: '0.85rem',
+                          transition: 'width 0.5s ease'
                         }}>
-                          {data.orders > 0 && `${data.orders} orders`}
+                          {data.orders > 0 && `${data.orders}`}
                         </div>
                       </div>
                     </div>
@@ -547,19 +577,9 @@ function Reports() {
           </>
         )}
 
-        {/* No Data */}
         {!trendsLoading && !dayOfWeekData && (
-          <div style={{
-            padding: '60px',
-            textAlign: 'center',
-            backgroundColor: '#f8f9fa',
-            borderRadius: '8px',
-            border: '1px solid #ddd'
-          }}>
-            <div style={{ fontSize: '64px', marginBottom: '20px' }}>📊</div>
-            <p style={{ fontSize: '18px', color: '#666' }}>
-              Click "Generate Trend Report" to see day-of-week analysis.
-            </p>
+          <div style={style.emptyState}>
+             <p style={{ fontSize: '1.2rem', margin: 0 }}>Click "Generate Trend Report" to see data.</p>
           </div>
         )}
       </div>
@@ -569,41 +589,24 @@ function Reports() {
   const renderAuditReport = () => {
     return (
       <div>
-        <h2 style={{ marginBottom: '20px' }}>📝 Audit Log - Lookup Change History</h2>
-        <p style={{ color: '#666', marginBottom: '30px' }}>
-          Track all changes made to flavours, toppings, consistencies, and system configuration.
-        </p>
+        <div style={{ marginBottom: '25px', borderLeft: '5px solid #FF69B4', paddingLeft: '15px' }}>
+          <h2 style={{ fontSize: '1.5rem', margin: 0, color: '#2D2D2D' }}>Audit Logs</h2>
+          <p style={{ color: '#666', marginTop: '5px' }}>Track changes to menu and configuration.</p>
+        </div>
 
         {/* Filters */}
-        <div style={{
-          padding: '25px',
-          backgroundColor: '#f8f9fa',
-          borderRadius: '8px',
-          border: '1px solid #ddd',
-          marginBottom: '30px'
-        }}>
-          <h3 style={{ marginBottom: '20px' }}>Filters</h3>
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            gap: '20px',
-            marginBottom: '20px'
-          }}>
+        <div style={style.card}>
+          <h3 style={{ ...style.label, fontSize: '1.1rem', marginBottom: '20px' }}>Filter Logs</h3>
+          <div style={style.filtersGrid}>
             <div>
-              <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>
-                Action Type
-              </label>
+              <label style={style.label}>Action Type</label>
               <select
                 name="action"
                 value={auditFilters.action}
                 onChange={handleAuditFilterChange}
-                style={{
-                  width: '100%',
-                  padding: '10px',
-                  border: '1px solid #ccc',
-                  borderRadius: '4px',
-                  fontSize: '14px'
-                }}
+                style={style.input}
+                onFocus={(e) => e.target.style.borderColor = '#FF69B4'}
+                onBlur={(e) => e.target.style.borderColor = '#FFE5EC'}
               >
                 <option value="">All Actions</option>
                 <option value="UPDATE_FLAVOUR">Update Flavour</option>
@@ -613,149 +616,88 @@ function Reports() {
                 <option value="CREATE_ORDER">Create Order</option>
               </select>
             </div>
-
             <div>
-              <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>
-                Start Date
-              </label>
+              <label style={style.label}>Start Date</label>
               <input
                 type="date"
                 name="startDate"
                 value={auditFilters.startDate}
                 onChange={handleAuditFilterChange}
-                style={{
-                  width: '100%',
-                  padding: '10px',
-                  border: '1px solid #ccc',
-                  borderRadius: '4px',
-                  fontSize: '14px'
-                }}
+                style={style.input}
+                onFocus={(e) => e.target.style.borderColor = '#FF69B4'}
+                onBlur={(e) => e.target.style.borderColor = '#FFE5EC'}
               />
             </div>
-
             <div>
-              <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>
-                End Date
-              </label>
+              <label style={style.label}>End Date</label>
               <input
                 type="date"
                 name="endDate"
                 value={auditFilters.endDate}
                 onChange={handleAuditFilterChange}
-                style={{
-                  width: '100%',
-                  padding: '10px',
-                  border: '1px solid #ccc',
-                  borderRadius: '4px',
-                  fontSize: '14px'
-                }}
+                style={style.input}
+                onFocus={(e) => e.target.style.borderColor = '#FF69B4'}
+                onBlur={(e) => e.target.style.borderColor = '#FFE5EC'}
               />
             </div>
           </div>
-
           <button
             onClick={fetchAuditLogs}
             disabled={auditLoading}
-            style={{
-              padding: '10px 30px',
-              backgroundColor: auditLoading ? '#ccc' : '#007bff',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: auditLoading ? 'not-allowed' : 'pointer',
-              fontWeight: 'bold'
-            }}
+            style={{ ...style.primaryButton, opacity: auditLoading ? 0.7 : 1 }}
           >
-            {auditLoading ? 'Loading...' : '🔍 View Audit Logs'}
+            {auditLoading ? 'Loading...' : 'View Logs'}
           </button>
         </div>
 
-        {/* Error Message */}
         {auditError && (
-          <div style={{
-            padding: '15px',
-            backgroundColor: '#f8d7da',
-            border: '1px solid #f5c6cb',
-            borderRadius: '4px',
-            color: '#721c24',
-            marginBottom: '20px'
-          }}>
-            ❌ {auditError}
+          <div style={{ ...style.pill('#FFF0F0', '#D32F2F'), display: 'block', textAlign: 'center', marginBottom: '20px', padding: '15px' }}>
+            {auditError}
           </div>
         )}
 
-        {/* Audit Logs Table */}
         {auditLogs.length > 0 && (
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{
-              width: '100%',
-              borderCollapse: 'collapse',
-              backgroundColor: '#fff',
-              boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-            }}>
+          <div style={style.tableWrapper}>
+             <div style={{ overflowX: 'auto' }}>
+            <table style={style.table}>
               <thead>
-                <tr style={{ backgroundColor: '#007bff', color: 'white' }}>
-                  <th style={{ padding: '15px', textAlign: 'left' }}>Date/Time</th>
-                  <th style={{ padding: '15px', textAlign: 'left' }}>User</th>
-                  <th style={{ padding: '15px', textAlign: 'left' }}>Action</th>
-                  <th style={{ padding: '15px', textAlign: 'left' }}>Field</th>
-                  <th style={{ padding: '15px', textAlign: 'left' }}>Change</th>
+                <tr>
+                  <th style={style.th}>Date/Time</th>
+                  <th style={style.th}>User</th>
+                  <th style={style.th}>Action</th>
+                  <th style={style.th}>Field</th>
+                  <th style={style.th}>Change</th>
                 </tr>
               </thead>
               <tbody>
-                {auditLogs.map((log, index) => (
-                  <tr
-                    key={log.id}
-                    style={{
-                      borderBottom: '1px solid #ddd',
-                      backgroundColor: index % 2 === 0 ? '#f9f9f9' : '#fff'
-                    }}
-                  >
-                    <td style={{ padding: '15px', fontSize: '14px' }}>
-                      {formatDate(log.timestamp)}
+                {auditLogs.map((log) => (
+                  <tr key={log.id}>
+                    <td style={style.td}>{formatDate(log.timestamp)}</td>
+                    <td style={style.td}>
+                      <div style={{ fontWeight: '600' }}>{log.user.firstname}</div>
+                      <div style={{ fontSize: '0.85rem', color: '#9CA3AF' }}>{log.user.email}</div>
                     </td>
-                    <td style={{ padding: '15px' }}>
-                      <strong>{log.user.firstname}</strong>
-                      <div style={{ fontSize: '12px', color: '#666' }}>{log.user.email}</div>
-                    </td>
-                    <td style={{ padding: '15px' }}>
-                      <span style={{
-                        padding: '5px 10px',
-                        backgroundColor: '#e9ecef',
-                        borderRadius: '4px',
-                        fontSize: '12px',
-                        fontWeight: 'bold'
-                      }}>
+                    <td style={style.td}>
+                      <span style={style.pill('#F3F4F6', '#374151')}>
                         {log.action}
                       </span>
                     </td>
-                    <td style={{ padding: '15px', fontWeight: 'bold' }}>
+                    <td style={{ ...style.td, fontWeight: 'bold', color: '#FF69B4' }}>
                       {log.field || '-'}
                     </td>
-                    <td style={{ padding: '15px' }}>
+                    <td style={style.td}>
                       {log.oldValue && log.newValue ? (
-                        <div>
-                          <span style={{ 
-                            padding: '3px 8px', 
-                            backgroundColor: '#f8d7da', 
-                            borderRadius: '4px',
-                            textDecoration: 'line-through',
-                            marginRight: '10px'
-                          }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                          <span style={{ ...style.pill('#FEF2F2', '#991B1B'), textDecoration: 'line-through', opacity: 0.7 }}>
                             {log.oldValue}
                           </span>
-                          →
-                          <span style={{ 
-                            padding: '3px 8px', 
-                            backgroundColor: '#d4edda', 
-                            borderRadius: '4px',
-                            marginLeft: '10px'
-                          }}>
+                          <span style={{ color: '#6B6B6B' }}>to</span>
+                          <span style={style.pill('#ECFDF5', '#065F46')}>
                             {log.newValue}
                           </span>
                         </div>
                       ) : (
-                        '-'
+                        <span style={{ color: '#9CA3AF' }}>-</span>
                       )}
                     </td>
                   </tr>
@@ -763,21 +705,12 @@ function Reports() {
               </tbody>
             </table>
           </div>
+          </div>
         )}
 
-        {/* No Results */}
         {!auditLoading && auditLogs.length === 0 && (
-          <div style={{
-            padding: '60px',
-            textAlign: 'center',
-            backgroundColor: '#f8f9fa',
-            borderRadius: '8px',
-            border: '1px solid #ddd'
-          }}>
-            <div style={{ fontSize: '64px', marginBottom: '20px' }}>📝</div>
-            <p style={{ fontSize: '18px', color: '#666' }}>
-              No audit logs found. Try adjusting your filters or view all logs.
-            </p>
+          <div style={style.emptyState}>
+             <p style={{ fontSize: '1.2rem', margin: 0 }}>No audit logs found.</p>
           </div>
         )}
       </div>
@@ -787,81 +720,45 @@ function Reports() {
   // ==================== MAIN RENDER ====================
 
   return (
-    <div style={{ padding: '40px', maxWidth: '1400px', margin: '0 auto' }}>
-      {/* Header */}
-      <div style={{ marginBottom: '30px' }}>
-        <h1>📊 Reports & Analytics</h1>
-        <p style={{ color: '#666' }}>
-          Comprehensive reports and business insights
-        </p>
-      </div>
+    <div style={style.pageWrapper}>
+      <div style={style.container}>
+        
+        {/* Header */}
+        <div style={style.header}>
+          <h1 style={style.title}>Reports & Analytics</h1>
+          <p style={style.subtitle}>
+            Business insights and system logs.
+          </p>
+        </div>
 
-      {/* Tabs */}
-      <div style={{
-        display: 'flex',
-        gap: '10px',
-        marginBottom: '30px',
-        borderBottom: '2px solid #ddd',
-        flexWrap: 'wrap'
-      }}>
-        <button
-          onClick={() => setActiveTab('orders')}
-          style={{
-            padding: '12px 24px',
-            backgroundColor: activeTab === 'orders' ? '#007bff' : 'transparent',
-            color: activeTab === 'orders' ? 'white' : '#333',
-            border: 'none',
-            borderBottom: activeTab === 'orders' ? '3px solid #007bff' : 'none',
-            cursor: 'pointer',
-            fontWeight: activeTab === 'orders' ? 'bold' : 'normal',
-            fontSize: '16px'
-          }}
-        >
-          📊 All Orders
-        </button>
-        <button
-          onClick={() => setActiveTab('trends')}
-          style={{
-            padding: '12px 24px',
-            backgroundColor: activeTab === 'trends' ? '#007bff' : 'transparent',
-            color: activeTab === 'trends' ? 'white' : '#333',
-            border: 'none',
-            borderBottom: activeTab === 'trends' ? '3px solid #007bff' : 'none',
-            cursor: 'pointer',
-            fontWeight: activeTab === 'trends' ? 'bold' : 'normal',
-            fontSize: '16px'
-          }}
-        >
-          📈 Day of Week Trends
-        </button>
-        <button
-          onClick={() => setActiveTab('audit')}
-          style={{
-            padding: '12px 24px',
-            backgroundColor: activeTab === 'audit' ? '#007bff' : 'transparent',
-            color: activeTab === 'audit' ? 'white' : '#333',
-            border: 'none',
-            borderBottom: activeTab === 'audit' ? '3px solid #007bff' : 'none',
-            cursor: 'pointer',
-            fontWeight: activeTab === 'audit' ? 'bold' : 'normal',
-            fontSize: '16px'
-          }}
-        >
-          📝 Audit Logs
-        </button>
-      </div>
+        {/* Tabs */}
+        <div style={style.tabsContainer}>
+          <button
+            onClick={() => setActiveTab('orders')}
+            style={style.tabButton(activeTab === 'orders')}
+          >
+            All Orders
+          </button>
+          <button
+            onClick={() => setActiveTab('trends')}
+            style={style.tabButton(activeTab === 'trends')}
+          >
+            Day of Week Trends
+          </button>
+          <button
+            onClick={() => setActiveTab('audit')}
+            style={style.tabButton(activeTab === 'audit')}
+          >
+            Audit Logs
+          </button>
+        </div>
 
-      {/* Tab Content */}
-      <div style={{
-        padding: '30px',
-        backgroundColor: '#fff',
-        borderRadius: '8px',
-        border: '1px solid #ddd',
-        minHeight: '500px'
-      }}>
-        {activeTab === 'orders' && renderOrdersReport()}
-        {activeTab === 'trends' && renderTrendsReport()}
-        {activeTab === 'audit' && renderAuditReport()}
+        {/* Tab Content */}
+        <div>
+          {activeTab === 'orders' && renderOrdersReport()}
+          {activeTab === 'trends' && renderTrendsReport()}
+          {activeTab === 'audit' && renderAuditReport()}
+        </div>
       </div>
     </div>
   );
